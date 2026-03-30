@@ -1,0 +1,66 @@
+﻿@model IEnumerable<GoldBranchAI.Models.ChatMessage>
+@{
+    var targetUser = ViewBag.TargetUser as GoldBranchAI.Models.AppUser;
+    int currentUserId = ViewBag.CurrentUserId;
+    ViewData["Title"] = targetUser.FullName + " ile Sohbet";
+}
+
+<div class="row justify-content-center fade-in-up">
+    <div class="col-md-10 col-lg-8">
+
+        <div class="card bg-dark border-0 shadow-sm mb-3" style="border-radius: 15px; border-bottom: 2px solid #0dcaf0 !important;">
+            <div class="card-body py-3 d-flex align-items-center">
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-circle me-3"><i class="fa-solid fa-arrow-left"></i></a>
+                <div>
+                    <h5 class="mb-0 text-light fw-bold">@targetUser.FullName</h5>
+                    <small class="text-info">@targetUser.Role</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-dark border-secondary shadow-lg mb-3" style="border-radius: 15px; height: 50vh; overflow-y: auto;" id="chatBox">
+            <div class="card-body p-4">
+                @foreach (var msg in Model)
+                {
+                    bool isMine = msg.SenderId == currentUserId;
+                    string alignClass = isMine ? "justify-content-end" : "justify-content-start";
+                    string bgClass = isMine ? "bg-info text-dark" : "bg-secondary text-light";
+                    string radiusClass = isMine ? "border-radius: 15px 15px 0 15px;" : "border-radius: 15px 15px 15px 0;";
+
+                    <div class="d-flex @alignClass mb-3">
+                        <div class="p-3 shadow-sm" style="max-width: 75%; @radiusClass background-color: @(isMine ? "#0dcaf0" : "#495057");">
+                            <p class="mb-1 @(isMine ? "text-dark" : "text-light") fw-bold" style="font-size: 0.95rem;">@msg.MessageText</p>
+                            <small class="@(isMine ? "text-dark opacity-75" : "text-light opacity-50")" style="font-size: 0.7rem;">
+                                @msg.SentAt.ToString("HH:mm") <i class="fa-solid fa-check-double ms-1"></i>
+                            </small>
+                        </div>
+                    </div>
+                }
+                @if (!Model.Any())
+                {
+                    <div class="text-center text-muted mt-5">
+                        <i class="fa-solid fa-hand-wave fa-3x mb-3"></i>
+                        <h6>Henüz mesajlaşmadınız. Merhaba deyin!</h6>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <form asp-action="SendMessage" method="post" class="d-flex gap-2">
+            <input type="hidden" name="receiverId" value="@targetUser.Id" />
+            <input type="text" name="messageText" class="form-control bg-dark text-light border-secondary shadow-sm py-3 px-4" style="border-radius: 25px;" placeholder="GitHub linki, Drive bağlantısı veya mesajınızı yazın..." required autocomplete="off" autofocus />
+            <button type="submit" class="btn btn-info rounded-circle shadow" style="width: 55px; height: 55px;">
+                <i class="fa-solid fa-paper-plane text-dark fs-5"></i>
+            </button>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa açıldığında mesaj kutusunu en aşağıya (son mesaja) kaydır
+        var chatBox = document.getElementById("chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    </script>
+}

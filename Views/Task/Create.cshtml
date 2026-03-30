@@ -1,0 +1,82 @@
+﻿@model GoldBranchAI.Models.TodoTask
+@{
+    ViewData["Title"] = "Yeni Görev Ata";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8 col-lg-7">
+        <div class="card bg-dark border-0 shadow-lg" style="border-radius: 15px; border-top: 4px solid #ffc107 !important;">
+            <div class="card-header bg-transparent border-0 text-center pt-4 pb-0">
+                <h3 class="text-warning fw-bold mb-0">
+                    <i class="fa-solid fa-pen-nib"></i> Yeni Görev Ata
+                </h3>
+                <p class="text-muted small mt-1">Ekip üyelerine saat ve dosya detaylarıyla yeni bir misyon belirle.</p>
+            </div>
+            <div class="card-body p-4 p-md-5 pt-3">
+                <form asp-action="Create" enctype="multipart/form-data">
+
+                    <div class="mb-4">
+                        <label asp-for="AppUserId" class="form-label text-light small fw-bold text-uppercase">
+                            <i class="fa-solid fa-user-astronaut text-info"></i> Görevi Alacak Kişi
+                        </label>
+                        <select asp-for="AppUserId" class="form-select bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" required>
+                            <option value="">-- Listeden Geliştirici Seçin --</option>
+                            @if (ViewBag.Developers != null)
+                            {
+                                foreach (var dev in ViewBag.Developers)
+                                {
+                                    <option value="@dev.Id">@dev.FullName (@dev.Email)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Title" class="form-label text-light small fw-bold text-uppercase">
+                            <i class="fa-solid fa-heading text-warning"></i> Görev Başlığı
+                        </label>
+                        <input asp-for="Title" class="form-control bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label text-light small fw-bold text-uppercase">
+                            <i class="fa-solid fa-align-left text-success"></i> Detay ve Notlar
+                        </label>
+                        <textarea asp-for="Description" class="form-control bg-dark text-light shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" rows="4"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-light small fw-bold text-uppercase">
+                            <i class="fa-solid fa-paperclip text-secondary"></i> Görev Dosyası (İsteğe Bağlı)
+                        </label>
+                        <input type="file" name="uploadedFile" class="form-control bg-dark text-light shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="DueDate" class="form-label text-light small fw-bold text-uppercase">
+                                <i class="fa-regular fa-calendar-check text-danger"></i> Son Teslim (Gün & Saat)
+                            </label>
+                            <input asp-for="DueDate" type="datetime-local" class="form-control bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" required />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="EstimatedTimeHours" class="form-label text-light small fw-bold text-uppercase">
+                                <i class="fa-solid fa-hourglass-start text-info"></i> Tahmini Süre (Saat)
+                            </label>
+                            <input asp-for="EstimatedTimeHours" type="number" class="form-control bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" placeholder="Örn: 5" required />
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-2">
+                        <button type="submit" class="btn btn-warning fw-bold py-3 fs-6 shadow" style="border-radius: 10px;">
+                            <i class="fa-solid fa-paper-plane"></i> Görevi Sisteme Aktar
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary py-2 fw-bold" style="border-radius: 10px;">
+                            <i class="fa-solid fa-arrow-left"></i> Vazgeç ve Listeye Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

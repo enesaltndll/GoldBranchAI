@@ -1,0 +1,64 @@
+﻿@model IEnumerable<GoldBranchAI.Models.AppUser>
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+<div class="row mb-4 align-items-center fade-in-up">
+    <div class="col-md-8">
+        <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-users-gear text-info"></i> Ekip Yönetimi</h2>
+        <p class="text-muted">Proje Şefi atamalarını buradan yapabilirsiniz.</p>
+    </div>
+</div>
+
+<div class="card bg-dark border-0 shadow-lg fade-in-up" style="border-radius: 15px; animation-delay: 0.1s;">
+    <div class="card-body p-0">
+        <table class="table table-dark table-hover mb-0" style="border-radius: 15px; overflow: hidden;">
+            <thead class="table-active">
+                <tr>
+                    <th class="ps-4">Personel</th>
+                    <th>E-posta</th>
+                    <th>Mevcut Rol</th>
+                    <th class="text-end pe-4">Yetki Değiştir</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr class="align-middle">
+                        <td class="ps-4 fw-bold">@user.FullName</td>
+                        <td class="text-muted">@user.Email</td>
+                        <td>
+                            @if (user.Role == "Admin")
+                            {
+                                <span class="badge bg-danger">Admin</span>
+                            }
+                            else if (user.Role == "Proje Sefi")
+                            {
+
+                                <span class="badge bg-warning text-dark">Proje Şefi</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-secondary">Geliştirici</span>
+                            }
+                        </td>
+                        <td class="text-end pe-4">
+                            @if (user.Role != "Admin")
+                            {
+                                <form asp-action="ChangeRole" method="post" class="d-inline-flex gap-2">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <select name="newRole" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto;">
+                                        <option value="Gelistirici" selected="@(user.Role == "Gelistirici" ? "selected" : null)">Geliştirici</option>
+                                        <option value="Proje Sefi" selected="@(user.Role == "Proje Sefi" ? "selected" : null)">Proje Şefi</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-info">Uygula</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

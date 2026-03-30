@@ -1,0 +1,58 @@
+﻿@model IEnumerable<GoldBranchAI.Models.SystemLog>
+@{
+    ViewData["Title"] = "Sistem Terminali";
+}
+
+<style>
+    .terminal-box {
+        background-color: #0c0c0c;
+        border: 1px solid #333;
+        border-radius: 10px;
+        font-family: 'Courier New', Courier, monospace;
+        height: 60vh;
+        overflow-y: auto;
+        padding: 20px;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .log-line {
+        border-bottom: 1px dashed #222;
+        padding: 5px 0;
+    }
+
+    .log-time {
+        color: #888;
+        margin-right: 15px;
+    }
+
+    .log-type {
+        color: #0dcaf0;
+        font-weight: bold;
+        width: 100px;
+        display: inline-block;
+    }
+
+    .log-msg {
+        color: #20c997;
+    }
+</style>
+
+<div class="row mb-3 fade-in-up">
+    <div class="col-12">
+        <h3 class="text-success fw-bold"><i class="fa-solid fa-terminal"></i> root@goldbranch-ai:~#</h3>
+    </div>
+</div>
+
+<div class="terminal-box fade-in-up" style="animation-delay: 0.1s;">
+    @foreach (var log in Model)
+    {
+        <div class="log-line">
+            <span class="log-time">[@log.CreatedAt.ToString("HH:mm:ss")]</span>
+            <span class="log-type">[@log.ActionType]</span>
+            <span class="log-msg">@log.Message</span>
+        </div>
+    }
+    <div class="log-line mt-3">
+        <span class="log-msg" style="color: #fff;">>_ Sistemin canlı izlenmesi aktif... <span class="spinner-grow spinner-grow-sm text-success ms-2" role="status"></span></span>
+    </div>
+</div>

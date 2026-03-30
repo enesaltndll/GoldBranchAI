@@ -1,0 +1,63 @@
+﻿@model IEnumerable<GoldBranchAI.Models.DailyTimeLog>
+@{
+    ViewData["Title"] = "Z-Raporu / Çalışma Süreleri";
+}
+
+<div class="row mb-4 align-items-center fade-in-up">
+    <div class="col-md-8">
+        <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-file-invoice text-warning"></i> Haftalık Z-Raporu</h2>
+        <p class="text-muted">Ekibinizin son 7 günlük sistem içi aktif çalışma süreleri.</p>
+    </div>
+</div>
+
+<div class="card bg-dark border-0 shadow-lg fade-in-up" style="border-radius: 15px; border-top: 4px solid #17a2b8; animation-delay: 0.1s;">
+    <div class="card-body p-0">
+        <table class="table table-dark table-hover mb-0" style="border-radius: 15px; overflow: hidden;">
+            <thead class="table-active">
+                <tr>
+                    <th class="ps-4">Tarih</th>
+                    <th>Personel Adı</th>
+                    <th>Rolü</th>
+                    <th>O Günkü Aktif Çalışma</th>
+                    <th class="text-end pe-4">Verimlilik</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    // Dakikayı Saat ve Dakikaya çevirme
+                    int hours = log.TotalMinutes / 60;
+                    int minutes = log.TotalMinutes % 60;
+                    string timeDisplay = hours > 0 ? $"{hours}s {minutes}dk" : $"{minutes}dk";
+
+                    // Maksimum 8 saat (480 dk) üzerinden yüzde hesaplama (görsel bar için)
+                    int percent = (int)Math.Round((double)(log.TotalMinutes) / 480 * 100);
+                    if (percent > 100) percent = 100;
+
+                    string barColor = percent > 75 ? "bg-success" : (percent > 30 ? "bg-info" : "bg-warning");
+
+                    <tr class="align-middle">
+                        <td class="ps-4 text-warning fw-bold"><i class="fa-regular fa-calendar-days me-1"></i> @log.LogDate.ToString("dd MMM yyyy")</td>
+                        <td class="text-light fw-bold">@log.AppUser?.FullName</td>
+                        <td><span class="badge bg-secondary">@log.AppUser?.Role</span></td>
+                        <td class="fw-bold fs-6">@timeDisplay</td>
+                        <td class="text-end pe-4" style="width: 25%;">
+                            <div class="progress bg-secondary" style="height: 10px; border-radius: 5px;">
+                                <div class="progress-bar @barColor" role="progressbar" style="width: @percent%;" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <i class="fa-solid fa-bed fa-3x mb-3 opacity-50"></i><br />
+                            Son 7 güne ait henüz bir çalışma kaydı bulunmuyor.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

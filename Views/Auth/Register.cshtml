@@ -1,0 +1,74 @@
+﻿@model GoldBranchAI.Models.AppUser
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sisteme Kayıt Ol - GoldBranch AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #1a1c20, #000000);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass-card {
+            background: rgba(33, 37, 41, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(13, 202, 240, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(13, 202, 240, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card glass-card text-light p-4">
+                    <div class="text-center mb-4 mt-2">
+                        <h3 class="text-info fw-bold mb-2"><i class="fa-solid fa-user-plus"></i> Ekibe Katıl</h3>
+                        <p class="text-muted small">Görevlerini yapay zeka ile yönetmeye başla.</p>
+                    </div>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger py-2 small text-center fw-bold border-0" style="background-color: rgba(220, 53, 69, 0.2); color: #ff6b6b;">
+                            <i class="fa-solid fa-circle-exclamation"></i> @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-controller="Auth" asp-action="Register" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold text-uppercase">Adınız Soyadınız</label>
+                            <input asp-for="FullName" class="form-control bg-dark text-light border-secondary py-2" placeholder="Örn: Enes Altındal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light small fw-bold text-uppercase">E-posta Adresi</label>
+                            <input asp-for="Email" type="email" class="form-control bg-dark text-light border-secondary py-2" placeholder="ornek@mail.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-light small fw-bold text-uppercase">Şifre Belirleyin</label>
+                            <input asp-for="Password" type="password" class="form-control bg-dark text-light border-secondary py-2" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 shadow text-dark fs-5" style="border-radius: 10px;">
+                            Kayıt Ol <i class="fa-solid fa-check ms-1"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <a asp-action="Login" class="text-info small text-decoration-none">Zaten hesabın var mı? Giriş Yap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

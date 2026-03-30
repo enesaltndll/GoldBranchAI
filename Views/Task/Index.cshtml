@@ -1,0 +1,241 @@
+﻿@model IEnumerable<GoldBranchAI.Models.TodoTask>
+@{
+    ViewData["Title"] = "Görev Panosu";
+    int delayCounter = 0;
+}
+
+<div class="welcome-banner fade-in-up text-center mb-5 p-4" style="background: rgba(33, 37, 41, 0.6); border-radius: 20px; border: 1px solid rgba(255, 193, 7, 0.2);">
+    <div class="system-title mb-2" style="font-size: 0.85rem; letter-spacing: 3px; color: #ffc107; text-transform: uppercase;">
+        GOLDBRANCH AI: Akıllı Görev ve Sağlık Yönetim Sistemi V2.0
+    </div>
+    <div class="main-welcome-text mb-3" style="font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #fff, #ffc107); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Hoş Geldin, @User.Identity.Name!
+    </div>
+    <p class="text-muted mx-auto" style="max-width: 600px;">
+        "İşinize Yapay Zeka, Sağlığınıza Altın Dal Dokunuşu." [cite: 39] <br />
+        Sistem aktif, tüm parametreler normalize edildi. Bugün harika işler başaracağız.
+    </p>
+</div>
+
+@if (ViewBag.UserRole == "Admin")
+{
+    <div class="row mb-5 fade-in-up">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #0dcaf0 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Tüm Sistem Görevleri</h6>
+                    <h2 class="text-info fw-bold mb-0">@ViewBag.TotalTasks <i class="fa-solid fa-chart-line float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #198754 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Tamamlanan İşler</h6>
+                    <h2 class="text-success fw-bold mb-0">@ViewBag.CompletedTasks <i class="fa-solid fa-check-double float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #dc3545 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Riskli / Acil İşler</h6>
+                    <h2 class="text-danger fw-bold mb-0">@ViewBag.UrgentTasks <i class="fa-solid fa-triangle-exclamation float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.UserRole == "Proje Sefi")
+{
+    <div class="row mb-5 fade-in-up">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #ffc107 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Ekibin Aktif Görevleri</h6>
+                    <h2 class="text-warning fw-bold mb-0">@ViewBag.ActiveTeamTasks <i class="fa-solid fa-layer-group float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #dc3545 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Riskli / Geciken İşler</h6>
+                    <h2 class="text-danger fw-bold mb-0">@ViewBag.UrgentTeamTasks <i class="fa-solid fa-bell float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #6f42c1 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Mevcut Geliştiriciler</h6>
+                    <h2 class="text-purple fw-bold mb-0" style="color:#b184f5;">@ViewBag.TotalDevelopers <i class="fa-solid fa-users float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mb-5 fade-in-up">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #fd7e14 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Bana Atanan Görevler</h6>
+                    <h2 class="text-orange fw-bold mb-0" style="color:#fd7e14;">@ViewBag.MyTotal <i class="fa-solid fa-laptop-code float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #198754 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Bitirdiğim Görevler</h6>
+                    <h2 class="text-success fw-bold mb-0">@ViewBag.MyCompleted <i class="fa-solid fa-medal float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark border-0 shadow-sm" style="border-left: 5px solid #dc3545 !important; border-radius: 10px;">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase fw-bold mb-1">Yaklaşan Teslimlerim</h6>
+                    <h2 class="text-danger fw-bold mb-0">@ViewBag.MyUrgent <i class="fa-regular fa-clock float-end opacity-50"></i></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+    <h3 class="text-light fw-bold mb-0">
+        @if (ViewBag.UserRole == "Gelistirici")
+        {
+            <span><i class="fa-solid fa-laptop-code text-warning"></i> Çalışma Masam</span>
+        }
+        else if (ViewBag.UserRole == "Proje Sefi")
+        {
+
+            <span><i class="fa-solid fa-layer-group text-warning"></i> İş Akışı & Görevler</span>
+        }
+        else
+        {
+
+            <span><i class="fa-solid fa-chart-pie text-info"></i> Genel Sistem Radarı</span>
+        }
+    </h3>
+
+    <div class="d-flex gap-3 align-items-center">
+        <div class="bg-dark border border-warning rounded-pill px-4 py-2 text-warning fw-bold shadow-sm" style="font-family: monospace; font-size: 1.1rem;" title="Günlük Aktif Mesainiz">
+            <i class="fa-solid fa-stopwatch"></i> <span id="screenTimer">00:00</span>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.UserRole == "Proje Sefi")
+{
+    <a asp-action="Create" class="btn btn-warning mb-4 fw-bold shadow-sm px-4 fade-in-up" style="border-radius: 8px; animation-delay: 0.2s;">
+        <i class="fa-solid fa-plus me-1"></i> Yeni Görev Ata
+    </a>
+}
+
+@if (ViewBag.UserRole != "Admin")
+{
+    <div class="row" id="taskList">
+        @foreach (var item in Model)
+        {
+            string cardBorder = "border-success";
+            string badgeColor = "bg-success";
+            var timeRemaining = item.DueDate - DateTime.Now;
+
+            if (item.Status == "Onay Bekliyor")
+            {
+                cardBorder = "border-info shadow-lg"; badgeColor = "bg-info text-dark";
+            }
+            else if (item.Status == "Revize")
+            {
+                cardBorder = "border-warning"; badgeColor = "bg-warning text-dark";
+            }
+            else if (timeRemaining.TotalHours < 24)
+            {
+                cardBorder = "border-danger"; badgeColor = "bg-danger";
+            }
+            else if (timeRemaining.TotalDays <= 3)
+            {
+                cardBorder = "border-warning"; badgeColor = "bg-warning text-dark";
+            }
+
+            double delay = 0.3 + (delayCounter * 0.1);
+
+            <div class="col-md-4 mb-4 task-card fade-in-up" style="animation-delay: @(delay)s;">
+                <div class="card bg-dark border-0 shadow h-100" style="border-top: 4px solid var(--bs-@cardBorder.Replace("border-", "").Replace("shadow-lg", "").Trim()); border-radius: 12px;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title text-light fw-bold">@item.Title</h5>
+                            @if (item.Status == "Onay Bekliyor")
+                            {
+                                <span class="badge bg-info text-dark h-50"><i class="fa-solid fa-spinner fa-spin"></i> Onay Bekliyor</span>
+                            }
+                            @if (item.Status == "Revize")
+                            {
+                                <span class="badge bg-warning text-dark h-50"><i class="fa-solid fa-rotate-left"></i> Revize İsteniyor</span>
+                            }
+                        </div>
+                        <p class="card-text text-muted" style="font-size: 0.9rem;">@item.Description</p>
+
+                        @if (!string.IsNullOrEmpty(item.AttachedFilePath))
+                        {
+                            <a href="@item.AttachedFilePath" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 mt-2 mb-2" style="font-size: 0.8rem;">
+                                <i class="fa-solid fa-paperclip"></i> Ek Dosyayı İndir
+                            </a>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge @badgeColor px-3 py-2 rounded-pill shadow-sm">
+                                <i class="fa-regular fa-clock me-1"></i> @item.DueDate.ToString("dd MMM HH:mm")
+                            </span>
+                            <span class="text-light small fw-bold" style="opacity: 0.8;">
+                                <i class="fa-solid fa-business-time text-warning"></i> @item.EstimatedTimeHours Saat
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 text-end pb-3 pe-3">
+                        @if (ViewBag.UserRole == "Gelistirici")
+                        {
+                            if (item.Status == "Devam Ediyor" || item.Status == "Revize")
+                            {
+                                <a asp-action="ChangeStatus" asp-route-id="@item.Id" asp-route-newStatus="Onay Bekliyor" class="btn btn-sm btn-outline-info fw-bold rounded-pill px-3">
+                                    <i class="fa-solid fa-paper-plane"></i> Şefin Onayına Gönder
+                                </a>
+                            }
+                        }
+                        else if (ViewBag.UserRole == "Proje Sefi")
+                        {
+                            if (item.Status == "Onay Bekliyor")
+                            {
+                                <a asp-action="ChangeStatus" asp-route-id="@item.Id" asp-route-newStatus="Revize" class="btn btn-sm btn-outline-warning fw-bold rounded-pill px-3 me-2">
+                                    <i class="fa-solid fa-rotate-left"></i> Revize İste
+                                </a>
+                                <a asp-action="ChangeStatus" asp-route-id="@item.Id" asp-route-newStatus="Tamamlandı" class="btn btn-sm btn-success fw-bold rounded-pill px-3 text-dark">
+                                    <i class="fa-solid fa-check-double"></i> Onayla & Bitir
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small fst-italic"><i class="fa-solid fa-hourglass-half"></i> Geliştiricinin bitirmesi bekleniyor...</span>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            delayCounter++;
+        }
+    </div>
+}
+else
+{
+    <div class="col-12 text-center mt-5 text-muted fade-in-up" style="animation-delay: 0.3s;">
+        <i class="fa-solid fa-satellite-dish fa-4x mb-4 opacity-50 text-info"></i>
+        <h4 class="text-light">Radar Modu Aktif</h4>
+        <p class="mx-auto" style="max-width: 500px;">Görev detayları ve atama modülleri Admin yetkisinden izole edilmiştir. İlerleyen güncellemelerde bu alan gelişmiş analiz araçlarıyla doldurulacaktır.</p>
+    </div>
+}

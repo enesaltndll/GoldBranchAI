@@ -1,0 +1,103 @@
+﻿@model IEnumerable<GoldBranchAI.Models.AppUser>
+@{
+    ViewData["Title"] = ViewBag.UserRole == "Admin" ? "İstihbarat Ağı" : "Ekip İletişimi";
+    var urgentTasks = ViewBag.UrgentTasks as Dictionary<int, string>;
+
+    // YENİ: ViewBag içindeki verileri C#'ın kesin olarak tanıması için dönüştürüyoruz (Casting)
+    var allMessages = ViewBag.AllMessages as List<GoldBranchAI.Models.ChatMessage>;
+}
+
+@if (ViewBag.UserRole == "Admin")
+{
+    <div class="row mb-4 align-items-center fade-in-up">
+        <div class="col-md-8">
+            <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-user-secret text-danger"></i> Sistem İstihbarat Ağı</h2>
+            <p class="text-muted">Sistemdeki tüm şef ve geliştirici mesajlaşma trafiğini buradan canlı izleyebilirsiniz.</p>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-0 shadow-lg fade-in-up" style="border-radius: 15px; border-top: 4px solid #dc3545; animation-delay: 0.1s;">
+        <div class="card-body p-0">
+            <table class="table table-dark table-hover mb-0" style="border-radius: 15px; overflow: hidden;">
+                <thead class="table-active">
+                    <tr>
+                        <th class="ps-4">Tarih / Saat</th>
+                        <th>Gönderen</th>
+                        <th>Alıcı</th>
+                        <th class="text-end pe-4" style="width: 50%;">İletişim İçeriği</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (allMessages != null)
+                    {
+                        foreach (var msg in allMessages)
+                        {
+                            <tr class="align-middle">
+                                <td class="ps-4 text-muted small"><i class="fa-regular fa-clock me-1"></i> @msg.SentAt.ToString("dd MMM yyyy HH:mm")</td>
+                                <td class="text-info fw-bold">@msg.Sender?.FullName</td>
+                                <td class="text-warning fw-bold">@msg.Receiver?.FullName</td>
+                                <td class="text-end pe-4 text-light">@msg.MessageText</td>
+                            </tr>
+                        }
+
+                        // Count hatası giderildi!
+                        if (allMessages.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-comment-slash fa-3x mb-3 opacity-50"></i><br />
+                                    Sistemde henüz hiçbir mesaj trafiği bulunmuyor.
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mb-4 align-items-center fade-in-up">
+        <div class="col-md-8">
+            <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-comments text-info"></i> Ekip Haberleşme Ağı</h2>
+            <p class="text-muted">Proje teslimleri, GitHub linkleri ve dosya paylaşımları için iletişim kanalı.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var user in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+                <div class="card bg-dark border-0 shadow-lg h-100" style="border-radius: 15px; border-left: 5px solid #0dcaf0 !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="text-light fw-bold mb-1">@user.FullName</h5>
+                                <span class="badge bg-secondary mb-3">@user.Role</span>
+                            </div>
+                            <i class="fa-solid fa-user-astronaut fa-2x text-muted opacity-50"></i>
+                        </div>
+
+                        <div class="bg-secondary bg-opacity-25 p-2 rounded-3 mb-3" style="border: 1px dashed rgba(255,255,255,0.2);">
+                            <small class="text-warning fw-bold d-block mb-1"><i class="fa-solid fa-thumbtack"></i> Yaklaşan Görev Durumu:</small>
+                            <small class="text-light">@(urgentTasks != null && urgentTasks.ContainsKey(user.Id) ? urgentTasks[user.Id] : "Bilgi Yok")</small>
+                        </div>
+
+                        <a asp-controller="Chat" asp-action="Room" asp-route-id="@user.Id" class="btn btn-outline-info w-100 fw-bold rounded-pill">
+                            <i class="fa-solid fa-paper-plane"></i> Mesaj Gönder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center mt-5 text-muted fade-in-up">
+                <i class="fa-regular fa-face-frown-open fa-3x mb-3"></i>
+                <h5>Şu an sistemde mesajlaşabileceğiniz kimse yok.</h5>
+            </div>
+        }
+    </div>
+}

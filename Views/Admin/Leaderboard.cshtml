@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Performans Ligi"; int rank = 1;
+}
+
+<div class="text-center mb-5 fade-in-up">
+    <h1 class="text-warning fw-bold display-5"><i class="fa-solid fa-trophy"></i> Şampiyonlar Ligi</h1>
+    <p class="text-muted">En çok görev tamamlayan geliştiriciler sıralaması.</p>
+</div>
+
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-md-8">
+        @foreach (var dev in ViewBag.TopDevs)
+        {
+            string medalColor = rank == 1 ? "color: #ffd700;" : (rank == 2 ? "color: #c0c0c0;" : (rank == 3 ? "color: #cd7f32;" : "color: #6c757d;"));
+            string cardScale = rank == 1 ? "transform: scale(1.05); z-index: 10;" : "";
+
+            <div class="card bg-dark border-secondary shadow mb-3" style="border-radius: 15px; @cardScale transition: 0.3s;">
+                <div class="card-body d-flex align-items-center justify-content-between p-3">
+                    <div class="d-flex align-items-center">
+                        <h2 class="mb-0 me-4 fw-bold" style="@medalColor width: 40px; text-align: center;">#@rank</h2>
+                        <div>
+                            <h5 class="mb-0 text-light fw-bold">@dev.User.FullName</h5>
+                            <small class="text-muted">Aktif: @dev.ActiveCount Görev</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <h3 class="mb-0 text-success fw-bold">@dev.CompletedCount</h3>
+                        <small class="text-muted text-uppercase" style="font-size: 0.7rem;">Tamamlanan</small>
+                    </div>
+                </div>
+            </div>
+            rank++;
+        }
+    </div>
+</div>

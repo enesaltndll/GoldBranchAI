@@ -1,0 +1,46 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+/* Karþýlama Baþlýðý Efekti */
+.welcome-banner {
+    background: linear-gradient(135deg, rgba(33, 37, 41, 0.8), rgba(0, 0, 0, 0.9));
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 40px;
+}
+
+.system-title {
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: #ffc107;
+    text-transform: uppercase;
+}
+
+.main-welcome-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #fff, #ffc107);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
