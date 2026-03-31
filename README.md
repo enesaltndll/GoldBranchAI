@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="docs/images/login.jpg" alt="GoldBranch AI Login" width="200" style="border-radius: 15px;" />
+  <img src="https://img.shields.io/badge/.NET-8.0-blueviolet?style=for-the-badge&logo=dotnet" />
+  <img src="https://img.shields.io/badge/EF_Core-8.0-blue?style=for-the-badge&logo=nuget" />
+  <img src="https://img.shields.io/badge/SQL_Server-LocalDB-red?style=for-the-badge&logo=microsoftsqlserver" />
+  <img src="https://img.shields.io/badge/Gemini_AI-Integrated-green?style=for-the-badge&logo=google" />
+  <img src="https://img.shields.io/badge/Bootstrap-5.3-purple?style=for-the-badge&logo=bootstrap" />
 </p>
 
 <h1 align="center">🌿 GoldBranch AI</h1>
@@ -7,6 +11,7 @@
 
 <p align="center">
   <i>Ekip yönetimi, görev takibi, yapay zeka iş analizi ve gerçek zamanlı iletişimi tek bir platformda birleştiren kurumsal düzeyde bir web uygulaması.</i>
+  <br>👉 <a href="docs/images/login.jpg"><strong>Oturum Açma Ekran Görselini İncele</strong></a>
 </p>
 
 ---
@@ -17,7 +22,7 @@
 - [Öne Çıkan Bonus Özellikler](#-öne-çıkan-bonus-özellikler)
 - [Mimari & Teknolojiler](#-mimari--teknolojiler)
 - [Geliştirme Performansı (Planlanan vs Gerçekleşen)](#-geliştirme-performansı)
-- [Ekran Görüntüleri](#-ekran-görüntüleri)
+- [Ekran Görüntüsü Galerisi](#-ekran-görüntüsü-galerisi)
 - [Kurulum & Çalıştırma](#-kurulum--çalıştırma)
 - [Proje Yapısı](#-proje-yapısı)
 
@@ -118,23 +123,14 @@ gantt
 
 ---
 
-## 📸 Ekran Görüntüleri
+## 📸 Ekran Görüntüsü Galerisi
 
-### 1️⃣ Geliştirici Çalışma Masası (Dashboard)
-Tema sistemi ile kontrol edilebilir modern çalışma alanı.
-![Dashboard Paneli](docs/images/dashboard.jpg)
+Görselleri tam çözünürlükte incelemek için lütfen ilgili bağlantılara tıklayın:
 
-### 2️⃣ Gemini AI Görev Analiz Motoru
-Yapay zeka sayesinde verilen iş tanımı otomatik olarak kırılır, efor ve strateji çıkarılır.
-![AI Kırılım Seti](docs/images/ai_breakdown.jpg)
-
-### 3️⃣ Admin Sistem İzleme & Radar Modu
-Sistem içi log mesajları ve geliştirici durumlarının izlendiği admin log terminali.
-![Radar Log Ekranı](docs/images/system_radar.jpg)
-
-### 4️⃣ Gelişmiş 5 Farklı Tema (Arayüz Uyarlanabilirliği)
-Altın, Uzay, Neon vs. seçenekleriyle kullanıcının ruh haline göre sistem renginin komple değişmesi.
-![Tema Merkezi](docs/images/themes.jpg)
+1. 👉 [**Geliştirici Çalışma Masası (Dashboard)**](docs/images/dashboard.jpg) - Tema sistemi ile kontrol edilebilir modern çalışma alanı.
+2. 👉 [**Gemini AI Görev Analiz Motoru**](docs/images/ai_breakdown.jpg) - Yapay zeka efor ve strateji çıkarıcı.
+3. 👉 [**Admin Sistem İzleme & Radar Modu**](docs/images/system_radar.jpg) - Sistem içi log mesajları terminali.
+4. 👉 [**Gelişmiş 5 Farklı Tema Merkezi**](docs/images/themes.jpg) - Kullanıcının ruh haline ve UX deneyimine göre ayarlanabilir arayüzler.
 
 ---
 
@@ -164,9 +160,11 @@ dotnet run
 
 ---
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Geliştirici & Danışman
 
-**Enes Altındal** — Çukurova Üniversitesi & Google Developer Community iş birliğinde tasarlanmıştır.
+**Öğrenci:** Enes Altındal (247017024)   
+**Sorumlu Öğretim Üyesi:** Öğr. Gör. Ekrem Saydam   
+**Kurum:** Sinop Üniversitesi / Ayancık Meslek Yüksekokulu
 
 <p align="center">
   <b>⭐ Projeyi beğendiyseniz github'da yıldız vermeyi unutmayın! ⭐</b>

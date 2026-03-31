@@ -1,8 +1,10 @@
 # 📅 GoldBranch AI — Haftalık Geliştirme Efor & Performans Raporu
 
 > **Proje:** GoldBranch AI — Yapay Zeka Destekli Akıllı Proje & Görev Yönetim Sistemi  
-> **Geliştirici:** Enes Altındal  
+> **Öğrenci:** Enes Altındal (247017024)  
+> **Kurum:** Sinop Üniversitesi / Ayancık Meslek Yüksekokulu  
 > **Dönem:** 2025-2026 Bahar Dönemi  
+> **Sorumlu Öğretim Üyesi:** Öğr. Gör. Ekrem Saydam
 
 Bu doküman, GoldBranch AI projesinin haftalık geliştirme döngülerini, entegre edilen mimarileri ve özellikle **planlanan vs gerçekleşen çalışma saati analizini** içerir. 
 
@@ -40,7 +42,7 @@ pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
 - **AppUser** modeli üzerinden 3 ana rol onaylandı: `Admin`, `Proje Şefi`, `Geliştirici`.
 - Cookie-Based Auth entegrasyonu tamamlandı.
 
-![Sisteme Giriş - Hafta 1](images/login.jpg)
+👉 [Sisteme Giriş - Hafta 1 Görselini İnceleyin (Ekran Görüntüsü)](images/login.jpg)
 
 ---
 
@@ -58,7 +60,7 @@ pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
 - **Aura Logic:** Kanban'da bitiş süresine yaklaşan işlerin Aura'sı otomatik KIRMIZI olarak kodlandı. 
 - *Proje Planında Olmayan Bonus:* Sistem genelinde mesai / ekran süresi sayacı (Session'a bağlı saniyelik çalışan log).
 
-![Kanban Dashboard - Hafta 2](images/dashboard.jpg)
+👉 [Kanban Dashboard - Hafta 2 Görselini İnceleyin (Ekran Görüntüsü)](images/dashboard.jpg)
 
 ---
 
@@ -77,7 +79,7 @@ pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
 - API'den dönen raw text, C# tarafında ayrıştırılarak proaktif saat tahminlerine dönüştürüldü.
 - *Neden bu kadar hızlı bitti?* Gemini API dokümantasyonu başarılıydı ve httpClient servisleri ilk seferde testten geçti.
 
-![Yapay Zeka Analiz - Hafta 3](images/ai_breakdown.jpg)
+👉 [Yapay Zeka Analiz - Hafta 3 Görselini İnceleyin (Ekran Görüntüsü)](images/ai_breakdown.jpg)
 
 ---
 
@@ -95,7 +97,7 @@ pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
 - Ekip iletişimini Mail vs bekleyişinden kurataracak Canlı Sohbet eklendi (`Iframe` & `Ajax` post kullanıldı).
 - **Proje Planında Olmayan Bonus:** Admin Rolü için geliştiriciler ne konuşuyor **Sistem İzleme Radarı** kuruldu! Yöneticilerin her daim kontrol sahibi olması hedeflendi.
 
-![Sistem Radarı - Hafta 4](images/system_radar.jpg)
+👉 [Sistem Radarı - Hafta 4 Görselini İnceleyin (Ekran Görüntüsü)](images/system_radar.jpg)
 
 ---
 
@@ -114,7 +116,7 @@ pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
 - EF Core `Include` (Select sorgusu sırası) kaynaklı System Crasher hataları başarıyla debug edildi.
 - Dokümantasyon tamamlandı.
 
-![5 Farklı Tema Kataloğu - Hafta 5](images/themes.jpg)
+👉 [5 Farklı Tema Kataloğu - Hafta 5 Görselini İnceleyin (Ekran Görüntüsü)](images/themes.jpg)
 
 ---
 
