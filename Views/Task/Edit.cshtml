@@ -1,25 +1,28 @@
 @model GoldBranchAI.Models.TodoTask
 @{
-    ViewData["Title"] = "Yeni Gorev Ata";
+    ViewData["Title"] = "Gorevi Duzenle";
 }
 
 <div class="row justify-content-center mt-4 mb-5 fade-in-up">
     <div class="col-md-8 col-lg-7">
-        <div class="card bg-dark border-0 shadow-lg" style="border-radius: 20px; border-top: 4px solid #ffc107 !important; position: relative; overflow: hidden;">
-            <!-- Animated top glow -->
-            <div style="position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(180deg,rgba(251,191,36,0.06),transparent);pointer-events:none;"></div>
+        <div class="card bg-dark border-0 shadow-lg" style="border-radius: 20px; border-top: 4px solid var(--gb-accent-cyan) !important; position: relative; overflow: hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(180deg,rgba(34,211,238,0.06),transparent);pointer-events:none;"></div>
 
             <div class="card-header bg-transparent border-0 text-center pt-5 pb-0" style="position:relative;z-index:1;">
                 <div class="mb-3">
-                    <span style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(251,191,36,0.05));border:1px solid rgba(251,191,36,0.2);">
-                        <i class="fa-solid fa-pen-nib text-warning" style="font-size:1.5rem;"></i>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(34,211,238,0.05));border:1px solid rgba(34,211,238,0.2);">
+                        <i class="fa-solid fa-pen-to-square text-info" style="font-size:1.5rem;"></i>
                     </span>
                 </div>
-                <h3 class="text-warning fw-bold mb-1">Yeni Gorev Ata</h3>
-                <p class="text-muted small">Ekip uyelerine saat ve dosya detaylariyla yeni bir misyon belirle.</p>
+                <h3 class="text-info fw-bold mb-1">Gorevi Guncelle</h3>
+                <p class="text-muted small">Gorev bilgilerini veya dosyasini degistirin.</p>
             </div>
+            
             <div class="card-body p-4 p-md-5 pt-3" style="position:relative;z-index:1;">
-                <form asp-action="Create" enctype="multipart/form-data">
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Status" />
+                    <input type="hidden" asp-for="AttachedFilePath" />
 
                     <div class="mb-4 fade-in-up" style="animation-delay: 0.1s;">
                         <label asp-for="AppUserId" class="form-label text-light small fw-bold text-uppercase">
@@ -53,12 +56,24 @@
 
                     <div class="mb-4 fade-in-up" style="animation-delay: 0.25s;">
                         <label class="form-label text-light small fw-bold text-uppercase">
-                            <i class="fa-solid fa-paperclip text-secondary"></i> Gorev Dosyasi (Istege Bagli)
+                            <i class="fa-solid fa-paperclip text-secondary"></i> Gorev Dosyasi
                         </label>
+                        
+                        @if (!string.IsNullOrEmpty(Model.AttachedFilePath))
+                        {
+                            <div class="alert bg-dark border border-info mb-3 d-flex align-items-center justify-content-between p-3" style="border-radius:12px;">
+                                <div>
+                                    <i class="fa-solid fa-file-circle-check text-info me-2 fs-5"></i>
+                                    <span class="text-light small">Mevcut Dosya Yuklu</span>
+                                </div>
+                                <a href="@Model.AttachedFilePath" target="_blank" class="btn btn-sm btn-outline-info rounded-pill">Indir / Goruntule</a>
+                            </div>
+                        }
+
                         <div id="dropZone" class="border rounded p-4 text-center cursor-pointer" style="border: 2px dashed rgba(255,255,255,0.2) !important; background: rgba(0,0,0,0.2); border-radius: 14px !important; transition: all 0.3s ease;">
                             <i class="fa-solid fa-cloud-arrow-up fa-3x text-info mb-3"></i>
-                            <h6 class="text-light fw-bold">Dosyayi Buraya Surukleyin veya Tiklayip Secin</h6>
-                            <p class="text-muted small mb-0">Resim, PDF, veya Ofis dosyalari (Maks. 10MB)</p>
+                            <h6 class="text-light fw-bold">Yeni Dosyayla Degistirmek Icin Surukleyin</h6>
+                            <p class="text-muted small mb-0">Bos birakirsaniz eski dosya korunur. (Maks 10MB)</p>
                             <input type="file" id="uploadedFile" name="uploadedFile" class="d-none" />
                         </div>
                         <div id="filePreviewContainer" class="mt-3 d-none">
@@ -86,16 +101,16 @@
                             <label asp-for="EstimatedTimeHours" class="form-label text-light small fw-bold text-uppercase">
                                 <i class="fa-solid fa-hourglass-start text-info"></i> Tahmini Sure (Saat)
                             </label>
-                            <input asp-for="EstimatedTimeHours" type="number" class="form-control bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;" placeholder="5" required />
+                            <input asp-for="EstimatedTimeHours" type="number" class="form-control bg-dark text-light py-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;" required />
                         </div>
                     </div>
 
                     <div class="d-grid gap-2 mt-3 fade-in-up" style="animation-delay: 0.35s;">
-                        <button type="submit" class="btn btn-warning fw-bold py-3 fs-6 shadow" style="border-radius: 14px;">
-                            <i class="fa-solid fa-paper-plane me-1"></i> Gorevi Sisteme Aktar
+                        <button type="submit" class="btn btn-info fw-bold py-3 fs-6 shadow text-dark" style="border-radius: 14px;">
+                            <i class="fa-solid fa-save me-1"></i> Degisiklikleri Kaydet
                         </button>
                         <a asp-action="Index" class="btn btn-outline-secondary py-2 fw-bold" style="border-radius: 14px;">
-                            <i class="fa-solid fa-arrow-left me-1"></i> Vazgec ve Listeye Don
+                            <i class="fa-solid fa-arrow-left me-1"></i> Iptal Et
                         </a>
                     </div>
                 </form>

@@ -1,7 +1,8 @@
-﻿using GoldBranchAI.Data;
+using GoldBranchAI.Data;
 using GoldBranchAI.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -36,7 +37,7 @@ namespace GoldBranchAI.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Task");
+            if (User.Identity.IsAuthenticated) return RedirectToAction("Dashboard", "Task");
             return View();
         }
 
@@ -59,7 +60,7 @@ namespace GoldBranchAI.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                return RedirectToAction("Index", "Task");
+                return RedirectToAction("Dashboard", "Task");
             }
 
             ViewBag.Error = "E-posta veya şifre hatalı.";
@@ -69,7 +70,7 @@ namespace GoldBranchAI.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Task");
+            if (User.Identity.IsAuthenticated) return RedirectToAction("Dashboard", "Task");
             return View();
         }
 
@@ -105,6 +106,52 @@ namespace GoldBranchAI.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Auth");
+        }
+
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!result.Succeeded) return RedirectToAction("Login");
+
+            var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            if (email == null) return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    FullName = name ?? "Google User",
+                    Email = email,
+                    Password = "GoogleOAuthLogin",
+                    Role = "Gelistirici"
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                
+                _context.SystemLogs.Add(new SystemLog { ActionType = "GİRİŞ / KAYIT", Message = $"'{user.FullName}' Google ile sisteme katıldı." });
+                await _context.SaveChangesAsync();
+            }
+
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            }, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+            return RedirectToAction("Dashboard", "Task");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using GoldBranchAI.Data;
+using GoldBranchAI.Data;
 using GoldBranchAI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +23,22 @@ namespace GoldBranchAI.Controllers
         {
             var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             return _context.Users.FirstOrDefault(u => u.Email == email);
+        }
+
+        public IActionResult Dashboard()
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser == null) return RedirectToAction("Logout", "Auth");
+
+            ViewBag.UserRole = currentUser.Role;
+            ViewBag.TotalTasks = _context.Tasks.Count();
+            ViewBag.CompletedTasks = _context.Tasks.Count(t => t.IsCompleted);
+            ViewBag.TotalDevelopers = _context.Users.Count(u => u.Role == "Gelistirici");
+            ViewBag.MyTotalTasks = _context.Tasks.Count(t => t.AppUserId == currentUser.Id);
+            ViewBag.MyCompletedTasks = _context.Tasks.Count(t => t.AppUserId == currentUser.Id && t.IsCompleted);
+            ViewBag.ActiveTeamTasks = _context.Tasks.Count(t => !t.IsCompleted);
+            
+            return View();
         }
 
         public IActionResult Index()
@@ -134,6 +150,71 @@ namespace GoldBranchAI.Controllers
                     _context.SystemLogs.Add(new SystemLog { ActionType = "GÖREV İADESİ", Message = $"Proje Şefi, '{task.Title}' görevini eksik bularak {task.AppUser?.FullName} adlı kişiye REVİZE için geri gönderdi." });
                 }
 
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Details(int id)
+        {
+            var task = _context.Tasks.Include(t => t.AppUser).FirstOrDefault(t => t.Id == id);
+            if (task == null) return NotFound();
+            return View(task);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser.Role != "Proje Sefi") return RedirectToAction("Index");
+
+            var task = _context.Tasks.Find(id);
+            if (task == null) return NotFound();
+
+            ViewBag.Developers = _context.Users.Where(u => u.Role == "Gelistirici").ToList();
+            return View(task);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, TodoTask updatedTask, IFormFile? uploadedFile)
+        {
+            var existingTask = _context.Tasks.Find(id);
+            if (existingTask == null) return NotFound();
+
+            existingTask.Title = updatedTask.Title;
+            existingTask.Description = updatedTask.Description;
+            existingTask.DueDate = updatedTask.DueDate;
+            existingTask.EstimatedTimeHours = updatedTask.EstimatedTimeHours;
+            existingTask.AppUserId = updatedTask.AppUserId;
+
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadedFile.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+                existingTask.AttachedFilePath = "/uploads/" + uniqueFileName;
+            }
+
+            _context.SystemLogs.Add(new SystemLog { ActionType = "GÖREV GÜNC.", Message = $"Proje Şefi, '{existingTask.Title}' görevini güncelledi." });
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser.Role != "Proje Sefi") return RedirectToAction("Index");
+
+            var task = _context.Tasks.Find(id);
+            if (task != null)
+            {
+                _context.Tasks.Remove(task);
+                _context.SystemLogs.Add(new SystemLog { ActionType = "GÖREV İPTAL", Message = $"Proje Şefi, '{task.Title}' görevini sistemden sildi." });
                 _context.SaveChanges();
             }
             return RedirectToAction("Index");

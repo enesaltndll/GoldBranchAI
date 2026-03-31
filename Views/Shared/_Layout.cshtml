@@ -1,67 +1,78 @@
-﻿<!DOCTYPE html>
-<html lang="tr" data-bs-theme="dark">
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark" data-theme="gold-dark">
 <head>
+    <script>
+        // Init theme before render to avoid flash
+        const savedTheme = localStorage.getItem('gb-theme') || 'gold-dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GoldBranch AI</title>
+    <meta name="description" content="GoldBranch AI - Akilli Gorev ve Saglik Yonetim Sistemi" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <style>
-        .fade-in-up {
-            animation: fadeInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        @@keyframes fadeInUp {
-            to
-
-        {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        }
-
-        .gradient-text {
-            background: linear-gradient(45deg, #ffc107, #ff9800);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
 </head>
 <body class="bg-dark text-light">
+
+    <!-- Animated Particle Canvas -->
+    <canvas id="particleCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:0.4;"></canvas>
+
+    <style>
+        .hover-glass { transition: all 0.3s ease; border-left: 3px solid transparent !important; }
+        .hover-glass:hover { 
+            background: rgba(255,255,255,0.04) !important; 
+            padding-left: 1.75rem !important; 
+            border-left: 3px solid var(--gb-gold) !important;
+        }
+    </style>
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom border-secondary shadow-sm mb-4 py-3">
+        <nav class="navbar navbar-expand-sm navbar-dark border-bottom border-secondary mb-4 py-3 sticky-top shadow" style="z-index: 1040; background: rgba(5, 7, 10, 0.98);">
             <div class="container">
                 <a class="navbar-brand fw-bold gradient-text" asp-controller="Task" asp-action="Index" style="font-size: 1.4rem;">
                     <i class="fa-solid fa-leaf text-warning"></i> GoldBranch AI
                 </a>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 ms-4">
-                        <li class="nav-item"><a class="nav-link text-light px-3" asp-controller="Task" asp-action="Index">Görev Panosu</a></li>
+                        <li class="nav-item"><a class="nav-link text-light px-3" asp-controller="Task" asp-action="Dashboard"><i class="fa-solid fa-rocket me-1 text-warning"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-light px-3" asp-controller="Task" asp-action="Index"><i class="fa-solid fa-columns me-1"></i> Gorev Panosu</a></li>
                         <li class="nav-item"><a class="nav-link text-info px-3 fw-bold" asp-controller="Chat" asp-action="Index"><i class="fa-solid fa-comments"></i> Ekip Chat</a></li>
+                        @if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Proje Sefi" ||
+                             User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Admin")
+                        {
+                            <li class="nav-item"><a class="nav-link px-3 fw-bold" asp-controller="Ai" asp-action="Breakdown" style="color:#a78bfa;"><i class="fa-solid fa-brain me-1"></i> AI Beyin</a></li>
+                        }
+                        else if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Gelistirici")
+                        {
+                            <li class="nav-item"><a class="nav-link px-3 fw-bold text-info" asp-controller="Ai" asp-action="Research"><i class="fa-solid fa-code me-1"></i> AI Asistan</a></li>
+                        }
                         @if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Admin")
                         {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-warning fw-bold px-3" href="#" data-bs-toggle="dropdown"><i class="fa-solid fa-crown"></i> Admin Paneli</a>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow-lg">
-                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Users">Ekip Yönetimi</a></li>
-                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="WorkReports">Z-Raporu</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="BurnoutMap">Isı Haritası</a></li>
-                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Leaderboard">Performans Ligi</a></li>
-                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="SystemLogs">Sistem Terminali</a></li>
-                                </ul>
+                            <li class="nav-item ms-2">
+                                <button class="btn btn-outline-warning rounded-pill px-3 py-2 btn-sm shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" style="border: 1px solid rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); letter-spacing: 0.5px;">
+                                    <i class="fa-solid fa-bars-staggered me-1"></i> Admin Paneli
+                                </button>
                             </li>
                         }
                     </ul>
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item d-flex align-items-center bg-secondary bg-opacity-25 px-3 py-1 rounded-pill border border-secondary">
+                            <!-- Theme Dropdown Removed - Replaced with Floating Action Button -->
+                            <li class="nav-item me-3 d-none d-md-block" title="Günlük Aktif Mesai Suresi">
+                                <div id="globalTimerWidget" class="d-flex align-items-center px-3 py-1 rounded-pill shadow-sm" style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.2); transition: all 0.3s ease; box-shadow: 0 0 10px rgba(34,211,238,0.1);">
+                                    <i class="fa-solid fa-stopwatch text-info me-2" style="animation: timerPulse 2s infinite;"></i>
+                                    <span id="screenTimer" class="fw-bold text-info" style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; letter-spacing: 1px;">00:00:00</span>
+                                </div>
+                            </li>
+                            <li class="nav-item d-flex align-items-center px-3 py-1 rounded-pill border border-secondary" style="background: rgba(251, 191, 36, 0.06); border-color: rgba(251,191,36,0.2) !important;">
                                 <span class="text-light me-3 small fw-bold"><i class="fa-solid fa-user-astronaut text-warning"></i> @User.Identity.Name</span>
-                                <a class="btn btn-danger btn-sm rounded-pill" asp-controller="Auth" asp-action="Logout"><i class="fa-solid fa-power-off"></i></a>
+                                <a class="btn btn-danger btn-sm rounded-pill" asp-controller="Auth" asp-action="Logout" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-power-off" style="font-size:0.75rem;"></i></a>
                             </li>
                         }
                     </ul>
@@ -71,6 +82,74 @@
     </header>
 
     <div class="container"><main role="main" class="pb-5">@RenderBody()</main></div>
+
+    @RenderSection("Scripts", required: false)
+
+    <!-- Admin Offcanvas Sidebar -->
+    @if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Admin")
+    {
+        <div class="offcanvas offcanvas-start bg-dark text-light shadow-lg" tabindex="-1" id="adminSidebarOffcanvas" style="border-right: 1px solid rgba(251,191,36,0.2); width: 340px; background: rgba(13, 17, 23, 0.98) !important;">
+            <div class="offcanvas-header pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.05); background: linear-gradient(135deg, rgba(251,191,36,0.05) 0%, transparent 100%);">
+                <h5 class="offcanvas-title fw-bold text-warning font-monospace d-flex align-items-center">
+                    <i class="fa-solid fa-crown me-2"></i> Komuta Paneli
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body p-0 d-flex flex-column" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 20px 20px;">
+                <div class="list-group list-group-flush mt-3" style="background: transparent;">
+                    <a asp-controller="Admin" asp-action="Roadmap" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 hover-glass d-flex align-items-center mb-1">
+                        <span class="bg-success bg-opacity-10 text-success rounded d-flex align-items-center justify-content-center me-3" style="width:40px;height:40px;"><i class="fa-solid fa-map-location-dot fa-lg"></i></span>
+                        <div>
+                            <span class="fw-bold d-block" style="letter-spacing:1px;font-family:'JetBrains Mono',monospace;">YOL HARITASI</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Proje Asamalari & Efor</small>
+                        </div>
+                    </a>
+                    
+                    <a asp-controller="Admin" asp-action="Users" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 hover-glass d-flex align-items-center mb-1">
+                        <span class="bg-info bg-opacity-10 text-info rounded d-flex align-items-center justify-content-center me-3" style="width:40px;height:40px;"><i class="fa-solid fa-users-viewfinder fa-lg"></i></span>
+                        <div>
+                            <span class="fw-bold d-block">Ekip Yonetimi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Sistem yetkilendirmesi</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Admin" asp-action="WorkReports" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 hover-glass d-flex align-items-center mb-1">
+                        <span class="bg-warning bg-opacity-10 text-warning rounded d-flex align-items-center justify-content-center me-3" style="width:40px;height:40px;"><i class="fa-solid fa-file-invoice fa-lg"></i></span>
+                        <div>
+                            <span class="fw-bold d-block">Z-Raporu Odasi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Gorev analitik verileri</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Admin" asp-action="Leaderboard" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 hover-glass d-flex align-items-center mb-1">
+                        <span class="bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center me-3" style="width:40px;height:40px;"><i class="fa-solid fa-trophy fa-lg"></i></span>
+                        <div>
+                            <span class="fw-bold d-block">Performans Ligi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Gelistirici siralama</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Admin" asp-action="BurnoutMap" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 hover-glass d-flex align-items-center mb-1">
+                        <span class="bg-danger bg-opacity-10 text-danger rounded d-flex align-items-center justify-content-center me-3" style="width:40px;height:40px;"><i class="fa-solid fa-fire-flame-curved fa-lg"></i></span>
+                        <div>
+                            <span class="fw-bold d-block">Isi Haritasi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Tukenmislik analizi</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="mt-auto p-4" style="border-top:1px solid rgba(255,255,255,0.05);">
+                    <a asp-controller="Admin" asp-action="SystemLogs" class="btn w-100 fw-bold rounded-pill p-3 shadow-lg d-flex justify-content-center align-items-center position-relative overflow-hidden" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981;">
+                        <span style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#10b981,transparent);animation:dashboardShimmer 3s infinite;"></span>
+                        <i class="fa-solid fa-satellite-dish me-2" style="animation: pulse 2s infinite;"></i> SİSTEM RADARI
+                    </a>
+                    <div class="text-center mt-3 text-muted small" style="font-family:'JetBrains Mono',monospace; opacity:0.5; font-size: 0.70rem;">
+                        [ GOLDBRANCH AI CORE V2.1 ]
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -92,7 +171,22 @@
                         localStorage.setItem(storageKey, totalSeconds);
                         if (timerElement) {
                             let h = Math.floor(totalSeconds / 3600), m = Math.floor((totalSeconds % 3600) / 60), s = totalSeconds % 60;
-                            timerElement.innerHTML = (h > 0 ? h + ":" : "") + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+                            let timeStr = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+                            timerElement.textContent = timeStr;
+                            
+                            const timerWidget = document.getElementById('globalTimerWidget');
+                            if (timerWidget) {
+                                if (h >= 8) {
+                                    timerWidget.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                                    timerWidget.style.background = "rgba(239, 68, 68, 0.1)";
+                                    timerElement.className = "fw-bold text-danger";
+                                    timerWidget.querySelector('i').className = "fa-solid fa-fire text-danger me-2";
+                                } else if (h >= 6) {
+                                    timerWidget.style.borderColor = "rgba(251, 146, 60, 0.5)";
+                                    timerWidget.style.background = "rgba(251, 146, 60, 0.1)";
+                                    timerElement.className = "fw-bold text-warning";
+                                }
+                            }
                         }
                     }, 1000);
                 });
@@ -100,6 +194,155 @@
             setInterval(() => { fetch('/TimeTracker/PingTime', { method: 'POST' }); }, 60000);
         </script>
     }
+
+    <!-- Floating Theme Switcher Button -->
+    <button class="btn rounded-circle shadow-lg" type="button" data-bs-toggle="offcanvas" data-bs-target="#themeOffcanvas" aria-controls="themeOffcanvas" style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1050; background: linear-gradient(135deg, var(--gb-bg-card), var(--gb-bg-secondary)); border: 2px solid var(--gb-gold); color: var(--gb-gold); box-shadow: 0 0 20px var(--gb-gold-glow) !important; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-palette fa-xl" style="animation: spinPulse 5s infinite linear;"></i>
+    </button>
+    <style>@@keyframes spinPulse { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }</style>
+
+    <!-- Theme Switcher Offcanvas -->
+    <div class="offcanvas offcanvas-end bg-dark text-light border-0 shadow-lg" tabindex="-1" id="themeOffcanvas" style="width: 320px; background: rgba(5, 7, 10, 0.98) !important; border-left: 1px solid rgba(255,255,255,0.05) !important;">
+        <div class="offcanvas-header pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <h5 class="offcanvas-title fw-bold font-monospace d-flex align-items-center" style="color: var(--gb-gold);">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Tema Merkezi
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p class="text-muted small mb-4">Arayuz temasini kisisel zevkinize gore secin. Ayarlar tarayicinizda kaydedilir.</p>
+            
+            <div class="d-flex flex-column gap-3">
+                <button class="btn theme-btn text-start p-3 border-0 rounded-4 shadow-sm" data-theme="gold-dark" style="background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(217,119,6,0.1)); border: 1px solid rgba(251,191,36,0.3) !important; transition: 0.3s; position:relative; overflow:hidden;">
+                    <div class="d-flex align-items-center">
+                        <span class="rounded-circle me-3 shadow" style="width:20px;height:20px;background:#fbbf24;box-shadow:0 0 10px #fbbf24;"></span>
+                        <div>
+                            <span class="fw-bold d-block text-warning" style="letter-spacing:1px;">Altin Karanlik</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Standart GoldBranch</small>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="btn theme-btn text-start p-3 border-0 rounded-4 shadow-sm" data-theme="space-blue" style="background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(2,132,199,0.1)); border: 1px solid rgba(56,189,248,0.3) !important; transition: 0.3s;">
+                    <div class="d-flex align-items-center">
+                        <span class="rounded-circle me-3 shadow" style="width:20px;height:20px;background:#38bdf8;box-shadow:0 0 10px #38bdf8;"></span>
+                        <div>
+                            <span class="fw-bold d-block text-info" style="letter-spacing:1px;">Uzay Mavisi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Soguk ve Modern</small>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="btn theme-btn text-start p-3 border-0 rounded-4 shadow-sm" data-theme="neon-purple" style="background: linear-gradient(135deg, rgba(192,132,252,0.1), rgba(147,51,234,0.1)); border: 1px solid rgba(192,132,252,0.3) !important; transition: 0.3s;">
+                    <div class="d-flex align-items-center">
+                        <span class="rounded-circle me-3 shadow" style="width:20px;height:20px;background:#c084fc;box-shadow:0 0 10px #c084fc;"></span>
+                        <div>
+                            <span class="fw-bold d-block" style="color:#c084fc;letter-spacing:1px;">Neon Mor</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Cyberpunk Esintisi</small>
+                        </div>
+                    </div>
+                </button>
+                
+                <button class="btn theme-btn text-start p-3 border-0 rounded-4 shadow-sm" data-theme="matrix-green" style="background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); border: 1px solid rgba(16,185,129,0.3) !important; transition: 0.3s;">
+                    <div class="d-flex align-items-center">
+                        <span class="rounded-circle me-3 shadow" style="width:20px;height:20px;background:#10b981;box-shadow:0 0 10px #10b981;"></span>
+                        <div>
+                            <span class="fw-bold d-block text-success" style="letter-spacing:1px;">Matrix Yesili</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Hacker Arayuzu</small>
+                        </div>
+                    </div>
+                </button>
+                
+                <button class="btn theme-btn text-start p-3 border-0 rounded-4 shadow-sm" data-theme="fire-red" style="background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.1)); border: 1px solid rgba(239,68,68,0.3) !important; transition: 0.3s;">
+                    <div class="d-flex align-items-center">
+                        <span class="rounded-circle me-3 shadow" style="width:20px;height:20px;background:#ef4444;box-shadow:0 0 10px #ef4444;"></span>
+                        <div>
+                            <span class="fw-bold d-block text-danger" style="letter-spacing:1px;">Ates Kirmizisi</span>
+                            <small class="text-muted" style="font-size:0.75rem;">Agresif ve Sicak</small>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const theme = btn.getAttribute('data-theme');
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('gb-theme', theme);
+                });
+            });
+        });
+
+        (function() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [];
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                    this.color = Math.random() > 0.7 ? '251,191,36' : (Math.random() > 0.5 ? '34,211,238' : '167,139,250');
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(' + this.color + ',' + this.opacity + ')';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => { p.update(); p.draw(); });
+
+                // Draw connections
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(251,191,36,' + (0.06 * (1 - dist / 120)) + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+    </script>
 </body>
 </html>

@@ -1,103 +1,301 @@
-﻿@model IEnumerable<GoldBranchAI.Models.AppUser>
+@model IEnumerable<GoldBranchAI.Models.AppUser>
 @{
-    ViewData["Title"] = ViewBag.UserRole == "Admin" ? "İstihbarat Ağı" : "Ekip İletişimi";
-    var urgentTasks = ViewBag.UrgentTasks as Dictionary<int, string>;
-
-    // YENİ: ViewBag içindeki verileri C#'ın kesin olarak tanıması için dönüştürüyoruz (Casting)
-    var allMessages = ViewBag.AllMessages as List<GoldBranchAI.Models.ChatMessage>;
+    ViewData["Title"] = "Ekip Haberlesme Agi";
+    var currentUserRole = ViewBag.UserRole as string;
+    var currentUserId = (int)ViewBag.CurrentUserId;
+    var groups = ViewBag.Groups as List<GoldBranchAI.Models.ChatGroup>;
+    var monitoringDevs = ViewBag.DevsForMonitoring as List<GoldBranchAI.Models.AppUser>;
 }
 
-@if (ViewBag.UserRole == "Admin")
-{
-    <div class="row mb-4 align-items-center fade-in-up">
-        <div class="col-md-8">
-            <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-user-secret text-danger"></i> Sistem İstihbarat Ağı</h2>
-            <p class="text-muted">Sistemdeki tüm şef ve geliştirici mesajlaşma trafiğini buradan canlı izleyebilirsiniz.</p>
-        </div>
-    </div>
+<style>
+    .whatsapp-container {
+        height: calc(100vh - 160px);
+        background: var(--gb-bg-card);
+        border: 1px solid var(--gb-border);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
+    }
 
-    <div class="card bg-dark border-0 shadow-lg fade-in-up" style="border-radius: 15px; border-top: 4px solid #dc3545; animation-delay: 0.1s;">
-        <div class="card-body p-0">
-            <table class="table table-dark table-hover mb-0" style="border-radius: 15px; overflow: hidden;">
-                <thead class="table-active">
-                    <tr>
-                        <th class="ps-4">Tarih / Saat</th>
-                        <th>Gönderen</th>
-                        <th>Alıcı</th>
-                        <th class="text-end pe-4" style="width: 50%;">İletişim İçeriği</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (allMessages != null)
+    .whatsapp-sidebar {
+        width: 350px;
+        background: #161b22;
+        border-right: 1px solid var(--gb-border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+
+    .whatsapp-main {
+        flex-grow: 1;
+        background: #0d1117;
+        position: relative;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        background: rgba(22, 27, 34, 0.95);
+        border-bottom: 1px solid var(--gb-border);
+    }
+
+    .sidebar-content {
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .sidebar-content::-webkit-scrollbar { width: 5px; }
+    .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+
+    .contact-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        text-decoration: none !important;
+    }
+
+    .contact-item:hover {
+        background: rgba(255,255,255,0.02);
+    }
+
+    .contact-item.active {
+        background: rgba(34, 211, 238, 0.08);
+        border-left: 4px solid var(--gb-accent-cyan);
+    }
+
+    .avatar-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .category-label {
+        padding: 10px 20px;
+        background: rgba(0,0,0,0.2);
+        color: var(--gb-text-muted);
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    /* ---- GRUP KUR INLINE PANEL ---- */
+    .group-create-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 9990;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .group-create-overlay.active {
+        display: flex;
+    }
+    .group-create-panel {
+        background: #161b22;
+        border: 1px solid var(--gb-gold);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 480px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+        animation: panelSlideIn 0.3s ease;
+    }
+    @@keyframes panelSlideIn {
+        from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="whatsapp-container">
+        <!-- SOL: SİDEBAR -->
+        <div class="whatsapp-sidebar">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+                <h5 class="text-light fw-bold mb-0">Haberlesme</h5>
+                @if (currentUserRole == "Admin" || currentUserRole == "Proje Sefi")
+                {
+                    <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="openGroupPanel()">
+                        <i class="fa-solid fa-plus me-1"></i> Grup Kur
+                    </button>
+                }
+            </div>
+
+            <div class="sidebar-content">
+                <!-- GRUPLAR -->
+                <div class="category-label"><i class="fa-solid fa-users-viewfinder me-2"></i> Grup Sohbetleri</div>
+                @if (groups != null && groups.Any())
+                {
+                    @foreach (var g in groups)
                     {
-                        foreach (var msg in allMessages)
-                        {
-                            <tr class="align-middle">
-                                <td class="ps-4 text-muted small"><i class="fa-regular fa-clock me-1"></i> @msg.SentAt.ToString("dd MMM yyyy HH:mm")</td>
-                                <td class="text-info fw-bold">@msg.Sender?.FullName</td>
-                                <td class="text-warning fw-bold">@msg.Receiver?.FullName</td>
-                                <td class="text-end pe-4 text-light">@msg.MessageText</td>
-                            </tr>
-                        }
+                        <a href="javascript:void(0)" onclick="loadChat(null, @g.Id, this)" class="contact-item">
+                            <div class="avatar-box" style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2);">
+                                <i class="fa-solid fa-users text-warning"></i>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-light fw-bold text-truncate">@g.GroupName</h6>
+                                    <small class="text-muted" style="font-size: 0.65rem;">@g.Members.Count Üye</small>
+                                </div>
+                                <small class="text-muted text-truncate d-block">Grup sohbetine katılın.</small>
+                            </div>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted small">Henüz bir grubunuz yok.</div>
+                }
 
-                        // Count hatası giderildi!
-                        if (allMessages.Count == 0)
+                <!-- DİREKT MESAJLAR -->
+                <div class="category-label"><i class="fa-solid fa-user-shield me-2"></i> Direkt Mesajlar</div>
+                @foreach (var user in Model)
+                {
+                    <a href="javascript:void(0)" onclick="loadChat(@user.Id, null, this)" class="contact-item">
+                        <div class="avatar-box" style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.2);">
+                            <i class="fa-solid fa-user-astronaut text-info"></i>
+                        </div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 text-light fw-bold text-truncate">@user.FullName</h6>
+                                <span class="badge bg-dark text-info border border-info border-opacity-25" style="font-size:0.6rem;">@user.Role</span>
+                            </div>
+                            <small class="text-muted text-truncate d-block">@user.Email</small>
+                        </div>
+                    </a>
+                }
+
+                @if (currentUserRole == "Admin")
+                {
+                    <!-- İZLEME MODU (ADMIN ONLY) -->
+                    <div class="category-label"><i class="fa-solid fa-tower-broadcast me-2"></i> Sistem Izleme (Gelistiriciler)</div>
+                    @if (monitoringDevs != null)
+                    {
+                        @foreach (var dev in monitoringDevs)
                         {
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-5">
-                                    <i class="fa-solid fa-comment-slash fa-3x mb-3 opacity-50"></i><br />
-                                    Sistemde henüz hiçbir mesaj trafiği bulunmuyor.
-                                </td>
-                            </tr>
+                            <a href="javascript:void(0)" onclick="loadChat(@dev.Id, null, this)" class="contact-item">
+                                <div class="avatar-box" style="background: rgba(111, 66, 193, 0.1); border: 1px solid rgba(111, 66, 193, 0.2);">
+                                    <i class="fa-solid fa-user-ninja text-purple" style="color: #6f42c1;"></i>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <h6 class="mb-0 text-light fw-bold text-truncate">@dev.FullName (Izle)</h6>
+                                    <small class="text-muted d-block" style="font-size: 0.7rem;">Gelistiricinin tum mesajlarını goruntuleyin.</small>
+                                </div>
+                            </a>
                         }
                     }
-                </tbody>
-            </table>
+                }
+            </div>
+        </div>
+
+        <!-- SAĞ: CHAT ALANI -->
+        <div class="whatsapp-main">
+            <div id="chatEmptyState" class="h-100 w-100 d-flex flex-column align-items-center justify-content-center text-muted text-center p-4">
+                <i class="fa-brands fa-whatsapp fa-5x mb-3 text-info opacity-50" style="animation: float 3s ease-in-out infinite;"></i>
+                <h3 class="text-light fw-bold">Sistem Iletisim Agi</h3>
+                <p style="max-width: 400px;">Mesajlasmaya baslamak icin sol menuden bir kisi veya grup secin. Konusmalar uctan uca sifrelenmis ve Gemini AI tarafindan guvenligi denetlenmektedir.</p>
+                <div class="mt-3 px-4 py-2 rounded-pill bg-dark border border-secondary border-opacity-25 small">
+                    <i class="fa-solid fa-lock text-success me-2"></i> GoldBranch AI Shield Aktif
+                </div>
+            </div>
+            <iframe id="chatIframe" src="" class="d-none w-100 h-100 border-0"></iframe>
         </div>
     </div>
-}
-else
-{
-    <div class="row mb-4 align-items-center fade-in-up">
-        <div class="col-md-8">
-            <h2 class="text-light fw-bold mb-0"><i class="fa-solid fa-comments text-info"></i> Ekip Haberleşme Ağı</h2>
-            <p class="text-muted">Proje teslimleri, GitHub linkleri ve dosya paylaşımları için iletişim kanalı.</p>
+</div>
+
+<!-- GRUP KUR - CUSTOM OVERLAY (Bootstrap modal kullanmiyoruz, kendi panelimiz) -->
+<div class="group-create-overlay" id="groupOverlay">
+    <div class="group-create-panel">
+        <div class="p-4 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="text-light fw-bold mb-0"><i class="fa-solid fa-users-plus me-2 text-info"></i> Yeni Grup Kur</h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="closeGroupPanel()" style="width:36px;height:36px;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         </div>
-    </div>
-
-    <div class="row">
-        @foreach (var user in Model)
-        {
-            <div class="col-md-6 col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.1s;">
-                <div class="card bg-dark border-0 shadow-lg h-100" style="border-radius: 15px; border-left: 5px solid #0dcaf0 !important;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="text-light fw-bold mb-1">@user.FullName</h5>
-                                <span class="badge bg-secondary mb-3">@user.Role</span>
-                            </div>
-                            <i class="fa-solid fa-user-astronaut fa-2x text-muted opacity-50"></i>
-                        </div>
-
-                        <div class="bg-secondary bg-opacity-25 p-2 rounded-3 mb-3" style="border: 1px dashed rgba(255,255,255,0.2);">
-                            <small class="text-warning fw-bold d-block mb-1"><i class="fa-solid fa-thumbtack"></i> Yaklaşan Görev Durumu:</small>
-                            <small class="text-light">@(urgentTasks != null && urgentTasks.ContainsKey(user.Id) ? urgentTasks[user.Id] : "Bilgi Yok")</small>
-                        </div>
-
-                        <a asp-controller="Chat" asp-action="Room" asp-route-id="@user.Id" class="btn btn-outline-info w-100 fw-bold rounded-pill">
-                            <i class="fa-solid fa-paper-plane"></i> Mesaj Gönder
-                        </a>
+        <form action="/Chat/CreateGroup" method="post">
+            <div class="p-4">
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Grup Adi</label>
+                    <input type="text" name="groupName" class="form-control py-3 px-4" style="background: #0d1117 !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #fff !important; border-radius: 14px;" placeholder="Orn: Teknoloji Ekibi" required />
+                </div>
+                <div>
+                    <label class="form-label text-muted small text-uppercase fw-bold">Uyeleri Secin</label>
+                    <div style="max-height: 250px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;">
+                        @if (Model != null)
+                        {
+                            @foreach (var user in Model)
+                            {
+                                <label class="d-flex align-items-center gap-3 p-3 text-light" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); background: #0d1117;">
+                                    <input type="checkbox" name="selectedUserIds" value="@user.Id" class="form-check-input" style="width:20px;height:20px;" />
+                                    <span>@user.FullName <small class="text-muted">(@user.Role)</small></span>
+                                </label>
+                            }
+                        }
+                        @if (monitoringDevs != null)
+                        {
+                            @foreach (var user in monitoringDevs)
+                            {
+                                <label class="d-flex align-items-center gap-3 p-3 text-light" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); background: #0d1117;">
+                                    <input type="checkbox" name="selectedUserIds" value="@user.Id" class="form-check-input" style="width:20px;height:20px;" />
+                                    <span>@user.FullName <small class="text-muted">(@user.Role)</small></span>
+                                </label>
+                            }
+                        }
                     </div>
                 </div>
             </div>
+            <div class="p-4 pt-0 d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" onclick="closeGroupPanel()">Vazgec</button>
+                <button type="submit" class="btn btn-info rounded-pill px-4 fw-bold">Grubu Olustur</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadChat(userId, groupId, elem) {
+            document.querySelectorAll('.contact-item').forEach(el => el.classList.remove('active'));
+            elem.classList.add('active');
+
+            document.getElementById('chatEmptyState').classList.add('d-none');
+            const iframe = document.getElementById('chatIframe');
+            iframe.classList.remove('d-none');
+
+            let url = '/Chat/Room?iframe=true';
+            if (userId) url += '&id=' + userId;
+            if (groupId) url += '&groupId=' + groupId;
+
+            iframe.src = url;
         }
 
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center mt-5 text-muted fade-in-up">
-                <i class="fa-regular fa-face-frown-open fa-3x mb-3"></i>
-                <h5>Şu an sistemde mesajlaşabileceğiniz kimse yok.</h5>
-            </div>
+        function openGroupPanel() {
+            document.getElementById('groupOverlay').classList.add('active');
         }
-    </div>
+        function closeGroupPanel() {
+            document.getElementById('groupOverlay').classList.remove('active');
+        }
+        // ESC tusu ile kapat
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeGroupPanel();
+        });
+        // Overlay'e tiklanirsa kapat
+        document.getElementById('groupOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeGroupPanel();
+        });
+    </script>
 }

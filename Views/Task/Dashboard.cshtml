@@ -1,0 +1,240 @@
+@{
+    ViewData["Title"] = "Ana Sayfa - Dashboard";
+}
+
+<style>
+    .dashboard-hero {
+        position: relative;
+        padding: 60px 20px;
+        text-align: center;
+        border-radius: var(--gb-radius-xl);
+        background: radial-gradient(circle at center, rgba(34, 211, 238, 0.1), transparent 60%);
+        border: 1px solid rgba(34, 211, 238, 0.15);
+        box-shadow: var(--gb-shadow-lg), inset 0 0 40px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--gb-accent-cyan), var(--gb-gold), transparent);
+        animation: dashboardShimmer 4s linear infinite;
+    }
+
+    @@keyframes dashboardShimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        background: linear-gradient(135deg, #fff, var(--gb-accent-cyan), var(--gb-gold));
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 4s linear infinite;
+        margin-bottom: 1rem;
+    }
+
+    .quick-action-card {
+        border-radius: var(--gb-radius-lg);
+        background: rgba(13, 17, 23, 0.9);
+        border: 1px solid var(--gb-border);
+        transition: var(--gb-transition-smooth);
+        display: flex;
+        align-items: center;
+        padding: 24px;
+        text-decoration: none;
+        color: var(--gb-text-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quick-action-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+        opacity: 0;
+        transition: var(--gb-transition-smooth);
+    }
+
+    .quick-action-card:hover::before { opacity: 1; }
+
+    .quick-action-card:hover {
+        transform: translateY(-5px);
+        background: rgba(22, 27, 34, 0.9);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-color: rgba(255,255,255,0.15);
+    }
+
+    .quick-action-icon {
+        width: 60px; height: 60px;
+        border-radius: var(--gb-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="dashboard-hero fade-in-up">
+    <!-- Uzay mekiği / Radar grid arkaplan dekoru -->
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);background-size:40px 40px;opacity:0.5;pointer-events:none;"></div>
+    
+    <div style="position:relative;z-index:1;">
+        <div class="mb-3">
+            <span class="badge px-3 py-2" style="background:rgba(34,211,238,0.1);color:var(--gb-accent-cyan);border:1px solid rgba(34,211,238,0.2);letter-spacing:2px;font-family:'JetBrains Mono',monospace;">
+                <i class="fa-solid fa-satellite-dish me-1" style="animation:pulse 2s infinite;"></i> SİSTEM DEVREDE
+            </span>
+        </div>
+        <h1 class="hero-title">Akilli Gorev Yonetimi V2.0</h1>
+        <p class="text-muted mx-auto" style="max-width:600px;font-size:1.1rem;">
+            Tum operasyonlariniz, analizleriniz ve ekip iletisimi bu merkezden yonetiliyor. 
+            Lutfen gorev rotanizi secin, kumandan.
+        </p>
+    </div>
+</div>
+
+<div class="row fade-in-up" style="animation-delay: 0.1s;">
+    
+    @if (ViewBag.UserRole == "Admin")
+    {
+        <div class="col-12 mb-3"><h5 class="text-warning fw-bold"><i class="fa-solid fa-crown me-2"></i> Sistem Komuta Merkezi</h5></div>
+        
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Admin" asp-action="Users" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-cyan);">
+                <div class="quick-action-icon" style="background:rgba(34,211,238,0.1);color:var(--gb-accent-cyan);"><i class="fa-solid fa-users-gear"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Ekip Yonetimi</h5>
+                    <small class="text-muted">Gelistirici ve Sef atamalari</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Admin" asp-action="BurnoutMap" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-rose);">
+                <div class="quick-action-icon" style="background:rgba(251,113,133,0.1);color:var(--gb-accent-rose);"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Isi Haritasi</h5>
+                    <small class="text-muted">Tukenmislik ve stres analizi</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Admin" asp-action="Leaderboard" class="quick-action-card" style="border-left: 4px solid var(--gb-gold);">
+                <div class="quick-action-icon" style="background:rgba(251,191,36,0.1);color:var(--gb-gold);"><i class="fa-solid fa-trophy"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Performans Ligi</h5>
+                    <small class="text-muted">En aktif gelistiriciler</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 mb-4">
+            <a asp-controller="Admin" asp-action="SystemLogs" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-emerald);">
+                <div class="quick-action-icon" style="background:rgba(52,211,153,0.1);color:var(--gb-accent-emerald);"><i class="fa-solid fa-terminal"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Sistem Terminali</h5>
+                    <small class="text-muted">Canli sistem islem loglari</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 mb-4">
+            <a asp-controller="Chat" asp-action="Index" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-violet);">
+                <div class="quick-action-icon" style="background:rgba(167,139,250,0.1);color:var(--gb-accent-violet);"><i class="fa-solid fa-user-secret"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Istihbarat Agi</h5>
+                    <small class="text-muted">Sistem ici canli chat trafigi</small>
+                </div>
+            </a>
+        </div>
+    }
+    else if (ViewBag.UserRole == "Proje Sefi")
+    {
+        <div class="col-12 mb-3"><h5 class="text-warning fw-bold"><i class="fa-solid fa-star me-2"></i> Operasyon Kontrol Masasi</h5></div>
+
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Task" asp-action="Create" class="quick-action-card" style="border-left: 4px solid var(--gb-gold);">
+                <div class="quick-action-icon" style="background:rgba(251,191,36,0.1);color:var(--gb-gold);"><i class="fa-solid fa-plus"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Yeni Gorev Ata</h5>
+                    <small class="text-muted">Ekibe is gonder</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Task" asp-action="Index" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-cyan);">
+                <div class="quick-action-icon" style="background:rgba(34,211,238,0.1);color:var(--gb-accent-cyan);"><i class="fa-solid fa-layer-group"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Gorev Radari</h5>
+                    <small class="text-muted">Mevcut gorevleri yonet</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Chat" asp-action="Index" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-emerald);">
+                <div class="quick-action-icon" style="background:rgba(52,211,153,0.1);color:var(--gb-accent-emerald);"><i class="fa-solid fa-comments"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Ekip Iletisimi</h5>
+                    <small class="text-muted">Gelistiricilerle haberles</small>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-12 mt-4">
+            <div class="card bg-dark border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <h3 class="mb-0 text-light"><i class="fa-solid fa-signal text-info me-2"></i> Sistemde aktif <b class="text-warning">@ViewBag.TotalDevelopers</b> gelistirici ve bekleyen <b class="text-danger">@ViewBag.ActiveTeamTasks</b> gorev bulunuyor.</h3>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12 mb-3"><h5 class="text-warning fw-bold"><i class="fa-solid fa-code me-2"></i> Muhendislik Birimi</h5></div>
+        
+        <div class="col-md-6 mb-4">
+            <a asp-controller="Task" asp-action="Index" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-orange);">
+                <div class="quick-action-icon" style="background:rgba(251,146,60,0.1);color:var(--gb-accent-orange);"><i class="fa-solid fa-laptop-code"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Calisma Radari</h5>
+                    <small class="text-muted">Bana atanan tum gorevler (@ViewBag.MyTotalTasks)</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 mb-4">
+            <a asp-controller="Chat" asp-action="Index" class="quick-action-card" style="border-left: 4px solid var(--gb-accent-cyan);">
+                <div class="quick-action-icon" style="background:rgba(34,211,238,0.1);color:var(--gb-accent-cyan);"><i class="fa-solid fa-comments"></i></div>
+                <div>
+                    <h5 class="mb-1 fw-bold">Sef Iletisim Hatti</h5>
+                    <small class="text-muted">Dosya ve baglanti gonderimi</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 mt-4">
+            <div class="card bg-dark border-0 shadow" style="border-radius:16px;">
+                <div class="card-body p-4 d-flex justify-content-around text-center">
+                    <div>
+                        <h1 class="text-orange fw-bold mb-0">@ViewBag.MyTotalTasks</h1>
+                        <small class="text-muted text-uppercase">Toplam</small>
+                    </div>
+                    <div>
+                        <h1 class="text-success fw-bold mb-0">@ViewBag.MyCompletedTasks</h1>
+                        <small class="text-muted text-uppercase">Bitirilen</small>
+                    </div>
+                    <div>
+                        <h1 class="text-danger fw-bold mb-0">@(ViewBag.MyTotalTasks - ViewBag.MyCompletedTasks)</h1>
+                        <small class="text-muted text-uppercase">Kalan</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

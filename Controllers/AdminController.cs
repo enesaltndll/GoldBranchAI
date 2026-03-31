@@ -1,4 +1,4 @@
-﻿using GoldBranchAI.Data;
+using GoldBranchAI.Data;
 using GoldBranchAI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +102,62 @@ namespace GoldBranchAI.Controllers
 
             ViewBag.TopDevs = topDevs;
             return View();
+        }
+
+        public IActionResult Roadmap()
+        {
+            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult DeleteUser(int userId)
+        {
+            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+
+            var user = _context.Users.Find(userId);
+            if (user != null)
+            {
+                if (user.Role == "Admin")
+                {
+                    TempData["Error"] = "Sistem yöneticilerini buradan silemezsiniz.";
+                    return RedirectToAction("Users");
+                }
+
+                try 
+                {
+                    // 1. İlişkili verileri temizle (Foreign Key hatalarını önlemek için)
+                    var relatedTasks = _context.Tasks.Where(t => t.AppUserId == userId);
+                    _context.Tasks.RemoveRange(relatedTasks);
+
+                    var relatedLogs = _context.DailyTimeLogs.Where(l => l.AppUserId == userId);
+                    _context.DailyTimeLogs.RemoveRange(relatedLogs);
+
+                    var relatedMessages = _context.ChatMessages.Where(m => m.SenderId == userId || m.ReceiverId == userId);
+                    _context.ChatMessages.RemoveRange(relatedMessages);
+
+                    var relatedResearch = _context.AiResearchLogs.Where(r => r.AppUserId == userId);
+                    _context.AiResearchLogs.RemoveRange(relatedResearch);
+
+                    var relatedBreakdowns = _context.AiTaskBreakdowns.Where(b => b.CreatedByUserId == userId);
+                    _context.AiTaskBreakdowns.RemoveRange(relatedBreakdowns);
+
+                    // 2. Sistem günlüğü
+                    _context.SystemLogs.Add(new SystemLog { 
+                        ActionType = "KULLANICI_SİL", 
+                        Message = $"{user.FullName} ({user.Role}) adlı kullanıcı ve tüm verileri silindi." 
+                    });
+                    
+                    // 3. Kullanıcıyı sil
+                    _context.Users.Remove(user);
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Silme işlemi sırasında bir hata oluştu: " + ex.Message;
+                }
+            }
+            return RedirectToAction("Users");
         }
     }
 }

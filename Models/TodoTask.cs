@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace GoldBranchAI.Models
 {
@@ -24,5 +24,29 @@ namespace GoldBranchAI.Models
         public int SpentTimeMinutes { get; set; } = 0;
         public string? AttachedFilePath { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // --- AURA LOGIC & SMART SORTING ---
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string AuraColor 
+        {
+            get 
+            {
+                if (IsCompleted) return "secondary";
+                var hoursLeft = (DueDate - DateTime.Now).TotalHours;
+                if (hoursLeft < 24) return "danger"; // Acil (Kırmızı)
+                if (hoursLeft < 168) return "warning"; // Yaklaşan (Turuncu - 7 gün)
+                return "success"; // Rahat (Yeşil)
+            }
+        }
+
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public double UrgencyScore
+        {
+            get 
+            {
+                if (IsCompleted) return 999999;
+                return (DueDate - DateTime.Now).TotalHours;
+            }
+        }
     }
 }

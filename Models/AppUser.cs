@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace GoldBranchAI.Models
 {
@@ -22,5 +22,6 @@ namespace GoldBranchAI.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public ICollection<TodoTask>? TodoTasks { get; set; }
+        public ICollection<ChatGroupMember>? Memberships { get; set; }
     }
 }

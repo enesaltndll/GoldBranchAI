@@ -1,4 +1,4 @@
-﻿using GoldBranchAI.Models;
+using GoldBranchAI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GoldBranchAI.Data
@@ -11,12 +11,23 @@ namespace GoldBranchAI.Data
         public DbSet<TodoTask> Tasks { get; set; }
         public DbSet<DailyTimeLog> DailyTimeLogs { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
-        public DbSet<SystemLog> SystemLogs { get; set; } // YENİ EKLENEN SATIR
+        public DbSet<SystemLog> SystemLogs { get; set; }
+        public DbSet<AiTaskBreakdown> AiTaskBreakdowns { get; set; }
+        public DbSet<AiResearchLog> AiResearchLogs { get; set; }
+        public DbSet<ChatGroup> ChatGroups { get; set; }
+        public DbSet<ChatGroupMember> ChatGroupMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ChatMessage>().HasOne(m => m.Sender).WithMany().HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ChatMessage>().HasOne(m => m.Receiver).WithMany().HasForeignKey(m => m.ReceiverId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatMessage>().HasOne(m => m.ChatGroup).WithMany(g => g.Messages).HasForeignKey(m => m.ChatGroupId).OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ChatGroup>().HasOne(g => g.CreatedByUser).WithMany().HasForeignKey(g => g.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ChatGroupMember>().HasOne(m => m.ChatGroup).WithMany(g => g.Members).HasForeignKey(m => m.ChatGroupId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatGroupMember>().HasOne(m => m.AppUser).WithMany(u => u.Memberships).HasForeignKey(m => m.AppUserId).OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
     }

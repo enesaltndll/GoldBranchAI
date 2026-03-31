@@ -1,4 +1,4 @@
-﻿using GoldBranchAI.Data;
+using GoldBranchAI.Data;
 using GoldBranchAI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,77 +29,124 @@ namespace GoldBranchAI.Controllers
             if (currentUser == null) return RedirectToAction("Logout", "Auth", new { area = "" });
 
             ViewBag.UserRole = currentUser.Role;
+            ViewBag.CurrentUserId = currentUser.Id;
 
-            // 1. ADMIN - İSTİHBARAT MODU
+            // 1. Grupları Getir
+            List<ChatGroup> activeGroups;
             if (currentUser.Role == "Admin")
             {
-                // Sistemdeki herkesin birbirine attığı TÜM mesajları tarihe göre çeker
-                var allMessages = _context.ChatMessages
-                    .Include(m => m.Sender)
-                    .Include(m => m.Receiver)
-                    .OrderByDescending(m => m.SentAt)
-                    .ToList();
-
-                ViewBag.AllMessages = allMessages;
-                return View(new List<AppUser>()); // Admin listeyi değil, direkt mesaj tablosunu görecek
-            }
-
-            // 2. NORMAL KULLANICILAR (Şef ve Geliştirici İzolasyonu)
-            List<AppUser> contacts;
-            if (currentUser.Role == "Gelistirici")
-            {
-                // Geliştirici SADECE Proje Şefini görebilir
-                contacts = _context.Users.Where(u => u.Role == "Proje Sefi").ToList();
+                activeGroups = _context.ChatGroups.Include(g => g.Members).ToList();
             }
             else
             {
-                // Proje Şefi SADECE Geliştiricileri görebilir
+                var myGroupIds = _context.ChatGroupMembers
+                    .Where(m => m.AppUserId == currentUser.Id)
+                    .Select(m => m.ChatGroupId)
+                    .ToList();
+
+                activeGroups = _context.ChatGroups
+                    .Include(g => g.Members)
+                    .Where(g => myGroupIds.Contains(g.Id))
+                    .ToList();
+            }
+            ViewBag.Groups = activeGroups;
+
+            // 2. Kişileri Getir
+            List<AppUser> contacts = new List<AppUser>();
+            if (currentUser.Role == "Admin")
+            {
+                // Admin hem Proje Şeflerine mesaj atabilir hem de Geliştirici-Şef konuşmalarını izleyebilir
+                // Şef listesini getir (Direkt Mesaj için)
+                contacts = _context.Users.Where(u => u.Role == "Proje Sefi").ToList();
+                
+                // İzleme modunda gösterilecek "Konuşma Çiftleri" Sidebar için özel bir yapı gerekebilir.
+                // Şimdilik sadece aktif kullanıcıları gösteriyoruz, izleme modunu Room üzerinden kontrol edeceğiz.
+                ViewBag.DevsForMonitoring = _context.Users.Where(u => u.Role == "Gelistirici").ToList();
+            }
+            else if (currentUser.Role == "Gelistirici")
+            {
+                contacts = _context.Users.Where(u => u.Role == "Proje Sefi").ToList();
+            }
+            else // Proje Şefi
+            {
                 contacts = _context.Users.Where(u => u.Role == "Gelistirici").ToList();
             }
 
-            var urgentTasks = new Dictionary<int, string>();
-            foreach (var user in contacts)
-            {
-                var urgentTask = _context.Tasks
-                    .Where(t => t.AppUserId == user.Id && !t.IsCompleted)
-                    .OrderBy(t => t.DueDate)
-                    .FirstOrDefault();
-
-                urgentTasks[user.Id] = urgentTask != null
-                    ? $"Acil İş: {urgentTask.Title} (Teslim: {urgentTask.DueDate.ToString("dd MMM HH:mm")})"
-                    : "Şu an aktif acil bir görevi yok.";
-            }
-
-            ViewBag.UrgentTasks = urgentTasks;
             return View(contacts);
         }
 
-        public IActionResult Room(int id)
+        public IActionResult Room(int? id, int? groupId)
         {
             var currentUser = GetCurrentUser();
-            // YENİ: Admin odaya giremez, o sadece üstten izler!
-            if (currentUser.Role == "Admin") return RedirectToAction("Index");
+            if (currentUser == null) return Unauthorized();
 
-            var targetUser = _context.Users.Find(id);
-            if (targetUser == null) return RedirectToAction("Index");
-
-            var messages = _context.ChatMessages
-                .Where(m => (m.SenderId == currentUser.Id && m.ReceiverId == targetUser.Id) ||
-                            (m.SenderId == targetUser.Id && m.ReceiverId == currentUser.Id))
-                .OrderBy(m => m.SentAt)
-                .ToList();
-
-            ViewBag.TargetUser = targetUser;
             ViewBag.CurrentUserId = currentUser.Id;
+            ViewBag.UserRole = currentUser.Role;
 
-            return View(messages);
+            // GRUP SOHBETİ
+            if (groupId.HasValue)
+            {
+                var group = _context.ChatGroups
+                    .Include(g => g.Members)
+                    .ThenInclude(m => m.AppUser)
+                    .FirstOrDefault(g => g.Id == groupId.Value);
+
+                if (group == null) return NotFound();
+
+                // Admin değilse ve üye değilse erişemez
+                if (currentUser.Role != "Admin" && !group.Members.Any(m => m.AppUserId == currentUser.Id))
+                {
+                    return Forbid();
+                }
+
+                var messages = _context.ChatMessages
+                    .Include(m => m.Sender)
+                    .Where(m => m.ChatGroupId == groupId.Value)
+                    .OrderBy(m => m.SentAt)
+                    .ToList();
+
+                ViewBag.IsGroup = true;
+                ViewBag.TargetGroup = group;
+                return View(messages);
+            }
+
+            // DİREKT MESAJ (DM)
+            if (id.HasValue)
+            {
+                var targetUser = _context.Users.Find(id.Value);
+                if (targetUser == null) return NotFound();
+
+                // Admin kısıtlamaları ve izleme modu
+                // Eğer Admin bir Geliştiriciye tıklarsa, araya bir "Şef" seçmesi gerekebilir izleme için.
+                // Bu basitleştirilmiş versiyonda Admin -> Şef DM, Admin -> Dev (İzleme) şeklinde kurguluyoruz.
+                
+                var messages = _context.ChatMessages
+                    .Include(m => m.Sender)
+                    .Where(m => (m.SenderId == currentUser.Id && m.ReceiverId == id.Value) ||
+                                (m.SenderId == id.Value && m.ReceiverId == currentUser.Id))
+                    .OrderBy(m => m.SentAt)
+                    .ToList();
+
+                ViewBag.IsGroup = false;
+                ViewBag.TargetUser = targetUser;
+                return View(messages);
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
-        public IActionResult SendMessage(int receiverId, string messageText)
+        public IActionResult SendMessage(int? receiverId, int? groupId, string messageText)
         {
             var currentUser = GetCurrentUser();
-            if (currentUser.Role == "Admin") return RedirectToAction("Index");
+            if (currentUser == null) return Unauthorized();
+
+            // Admin sadece Şeflere mesaj atabilir
+            if (currentUser.Role == "Admin" && receiverId.HasValue)
+            {
+                var target = _context.Users.Find(receiverId.Value);
+                if (target?.Role != "Proje Sefi") return Forbid();
+            }
 
             if (!string.IsNullOrWhiteSpace(messageText))
             {
@@ -107,6 +154,7 @@ namespace GoldBranchAI.Controllers
                 {
                     SenderId = currentUser.Id,
                     ReceiverId = receiverId,
+                    ChatGroupId = groupId,
                     MessageText = messageText,
                     SentAt = DateTime.Now
                 };
@@ -114,7 +162,48 @@ namespace GoldBranchAI.Controllers
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("Room", new { id = receiverId });
+            return RedirectToAction("Room", new { id = receiverId, groupId = groupId, iframe = true });
+        }
+
+        [HttpPost]
+        public IActionResult CreateGroup(string groupName, int[] selectedUserIds)
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser == null || (currentUser.Role != "Admin" && currentUser.Role != "Proje Sefi"))
+            {
+                return Forbid();
+            }
+
+            if (string.IsNullOrWhiteSpace(groupName) || selectedUserIds == null || selectedUserIds.Length == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var group = new ChatGroup
+            {
+                GroupName = groupName,
+                CreatedByUserId = currentUser.Id,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.ChatGroups.Add(group);
+            _context.SaveChanges();
+
+            // Yaratan kişiyi ve seçilenleri ekle
+            var allMembers = selectedUserIds.ToList();
+            if (!allMembers.Contains(currentUser.Id)) allMembers.Add(currentUser.Id);
+
+            foreach (var userId in allMembers)
+            {
+                _context.ChatGroupMembers.Add(new ChatGroupMember
+                {
+                    ChatGroupId = group.Id,
+                    AppUserId = userId
+                });
+            }
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
     }
 }

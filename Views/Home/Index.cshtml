@@ -1,8 +1,22 @@
-﻿@{
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center fade-in-up py-5">
+    <div class="mb-4">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(251,191,36,0.05));border:1px solid rgba(251,191,36,0.25);animation: float 3s ease-in-out infinite;">
+            <i class="fa-solid fa-leaf text-warning" style="font-size:2.2rem;filter:drop-shadow(0 0 12px rgba(251,191,36,0.5));"></i>
+        </span>
+    </div>
+    <h1 style="font-size:3rem;font-weight:900;background:linear-gradient(135deg,#fff,#fbbf24,#fcd34d);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;">
+        GoldBranch AI
+    </h1>
+    <p class="text-muted mt-3 mx-auto" style="max-width:500px;font-size:1.1rem;">
+        Isinize Yapay Zeka, Sagliginiza Altin Dal Dokunusu.
+    </p>
+    <div class="mt-4 fade-in-up" style="animation-delay:0.2s;">
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-warning btn-lg fw-bold px-5 py-3 shadow" style="border-radius:14px;">
+            <i class="fa-solid fa-rocket me-2"></i> Hemen Basla
+        </a>
+    </div>
 </div>
