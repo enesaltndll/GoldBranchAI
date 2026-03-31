@@ -99,7 +99,7 @@ Temel gereksinimlerin dışında, uygulamayı endüstri standardına taşımak i
 Proje başlangıcında **100 Adam-Saat** olarak planlanan bu büyük mimari; doğru kurgu, AI destekli kodlama ve verimli EF Core yönetimi sayesinde **toplam 62 Adam-Saat**'te başarıyla tamamlanmıştır. Her fazda beklenenden çok daha yüksek performans gösterildi.
 
 ```mermaid
-pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
+pie title 5 Haftalık Efor Oranları (Total: 62 Saat)
     "1. Hafta (Altyapı) - 15 Saat" : 15
     "2. Hafta (Kanban) - 12 Saat" : 12
     "3. Hafta (AI Entegre) - 8 Saat" : 8
