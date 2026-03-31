@@ -99,25 +99,12 @@ Temel gereksinimlerin dışında, uygulamayı endüstri standardına taşımak i
 Proje başlangıcında **100 Adam-Saat** olarak planlanan bu büyük mimari; doğru kurgu, AI destekli kodlama ve verimli EF Core yönetimi sayesinde **toplam 62 Adam-Saat**'te başarıyla tamamlanmıştır. Her fazda beklenenden çok daha yüksek performans gösterildi.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d1117', 'edgeLabelBackground':'#161b22', 'clusterBkg':'#161b22', 'mainBkg': '#161b22', 'textColor': '#c9d1d9', 'lineColor': '#fbbf24'}}}%%
-gantt
-    title Haftalık Efor Gerçekleşmesi
-    dateFormat  YYYY-MM-DD
-    axisFormat %W. Hafta
-    
-    section Planlanan
-    1. H. Plan (20s) :done, p1, 2026-02-24, 7d
-    2. H. Plan (20s) :done, p2, 2026-03-03, 7d
-    3. H. Plan (20s) :done, p3, 2026-03-10, 7d
-    4. H. Plan (20s) :done, p4, 2026-03-17, 7d
-    5. H. Plan (20s) :done, p5, 2026-03-24, 8d
-    
-    section Gerçekleşen Efor
-    1. Hafta (15s)   :active, a1, 2026-02-24, 5d
-    2. Hafta (12s)   :active, a2, 2026-03-03, 4d
-    3. Hafta (8s)*   :active, a3, 2026-03-10, 3d
-    4. Hafta (10s)   :active, a4, 2026-03-17, 3d
-    5. Hafta (17s)   :active, a5, 2026-03-24, 6d
+pie title 5 Haftalık Efor Gerçekleşme Oranları (Total: 62 Saat)
+    "1. Hafta (Altyapı) - 15 Saat" : 15
+    "2. Hafta (Kanban) - 12 Saat" : 12
+    "3. Hafta (AI Entegre) - 8 Saat" : 8
+    "4. Hafta (Mesajlaşma) - 10 Saat" : 10
+    "5. Hafta (UI/Test) - 17 Saat" : 17
 ```
 *\*3. Hafta: AI Modül entegrasyonu, Gemini Chatbot sayesinde rekor sürede (8s) entegre edilerek büyük zaman tasarrufu sağlanmıştır.*
 
