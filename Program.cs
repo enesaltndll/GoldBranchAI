@@ -25,6 +25,7 @@ builder.Services.AddSingleton<BillingService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<LocalizationService>();
 builder.Services.AddTransient<TelegramService>();
+builder.Services.AddTransient<DiscordService>();
 
 // SignalR Service
 builder.Services.AddSignalR();
@@ -62,6 +63,9 @@ using (var scope = app.Services.CreateScope())
         try
         {
             context.Database.ExecuteSqlRaw(@"
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Users') AND name = 'GithubUsername')
+                    ALTER TABLE [Users] ADD [GithubUsername] nvarchar(max) NULL;
+
                 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Users') AND name = 'PreferredAiProvider')
                     ALTER TABLE [Users] ADD [PreferredAiProvider] nvarchar(max) NOT NULL DEFAULT 'default';
                 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Users') AND name = 'CustomAiApiKey')
@@ -72,9 +76,25 @@ using (var scope = app.Services.CreateScope())
                     ALTER TABLE [Users] ADD [Bio] nvarchar(max) NULL;
                 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Users') AND name = 'TelegramChatId')
                     ALTER TABLE [Users] ADD [TelegramChatId] nvarchar(max) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Users') AND name = 'DiscordWebhookUrl')
+                    ALTER TABLE [Users] ADD [DiscordWebhookUrl] nvarchar(max) NULL;
 
                 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Tasks') AND name = 'CompletedAt')
                     ALTER TABLE [Tasks] ADD [CompletedAt] datetime2 NULL;
+
+                IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Friendships]') AND type in (N'U'))
+                BEGIN
+                    CREATE TABLE [Friendships] (
+                        [Id] int NOT NULL IDENTITY,
+                        [UserId] int NOT NULL,
+                        [FriendId] int NOT NULL,
+                        [EstablishedAt] datetime2 NOT NULL,
+                        [IsPending] bit NOT NULL,
+                        CONSTRAINT [PK_Friendships] PRIMARY KEY ([Id]),
+                        CONSTRAINT [FK_Friendships_Users_FriendId] FOREIGN KEY ([FriendId]) REFERENCES [Users] ([Id]),
+                        CONSTRAINT [FK_Friendships_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id])
+                    );
+                END
             ");
         }
         catch { /* Kolonlar zaten varsa hata görmezden gel */ }
@@ -86,9 +106,14 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

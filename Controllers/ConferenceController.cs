@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using GoldBranchAI.Services;
 
 namespace GoldBranchAI.Controllers
 {
+    [Authorize]
     public class ConferenceController : Controller
     {
         private readonly BillingService _billing;

@@ -93,7 +93,96 @@
             </div>
         </div>
 
-        <!-- ... Formlar ... -->
+        <!-- Sağ Kolon: Formlar -->
+        <div class="col-lg-8 fade-in-up" style="animation-delay: 0.2s;">
+            <!-- 👤 PROFİL BİLGİLERİ -->
+            <div class="gb-glass-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="gb-icon-box me-3">
+                        <i class="fa-solid fa-id-card text-info"></i>
+                    </div>
+                    <h5 class="fw-bold text-light mb-0">Genel Bilgiler</h5>
+                </div>
+
+                <form asp-action="UpdateProfile" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Ad Soyad</label>
+                            <input type="text" name="fullName" value="@Model.FullName" class="form-control" placeholder="Ad Soyad" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">
+                                Avatar URL 
+                                @if(canUseAnimated) { 
+                                    <span class="badge bg-info ms-2" style="font-size: 0.6rem;">GIF DESTEĞİ AKTİF</span>
+                                }
+                            </label>
+                            <input type="text" name="avatarUrl" value="@Model.AvatarUrl" class="form-control" placeholder="https://..." />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Biyografi</label>
+                            <textarea name="bio" class="form-control" rows="3" placeholder="Kendinizden bahsedin...">@Model.Bio</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Telegram Chat ID</label>
+                            <div class="input-group">
+                                <input type="text" name="telegramChatId" value="@Model.TelegramChatId" class="form-control" placeholder="Örn: 12345678" />
+                                <button type="button" id="btnTestTelegram" class="btn btn-outline-info">Test Et</button>
+                            </div>
+                            <div class="form-text smallest text-muted mt-2">
+                                <i class="fa-solid fa-circle-info me-1"></i> 
+                                ID'ni öğrenmek için <a href="https://t.me/userinfobot" target="_blank" class="text-warning fw-bold">@("@userinfobot")</a>'a yazabilirsin.
+                                <br>
+                                Botumuz: <a href="https://t.me/GoldBranchAIBot" target="_blank" class="text-info">@("@GoldBranchAIBot")</a> (Önce buna START bas!)
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Discord Webhook URL (Alternatif)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-info"><i class="fa-brands fa-discord"></i></span>
+                                <input type="text" name="discordWebhookUrl" value="@Model.DiscordWebhookUrl" class="form-control" placeholder="https://discord.com/api/webhooks/..." />
+                                <button type="button" id="btnTestDiscord" class="btn btn-outline-info">Kanalı Test Et</button>
+                            </div>
+                            <div class="form-text smallest text-muted mt-2">
+                                <i class="fa-solid fa-bolt text-warning me-1"></i> 
+                                Telegram çalışmıyorsa en güvenilir yöntemdir. Kanal ayarlarından entegrasyon ekleyerek URL alabilirsin.
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="border-secondary opacity-20 my-4">
+                    <button type="submit" class="btn btn-warning px-5 rounded-pill fw-bold">DEĞİŞİKLİKLERİ KAYDET</button>
+                </form>
+            </div>
+
+            <!-- 🔐 ŞİFRE DEĞİŞTİR -->
+            <div class="gb-glass-card p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="gb-icon-box me-3">
+                        <i class="fa-solid fa-shield-halved text-danger"></i>
+                    </div>
+                    <h5 class="fw-bold text-light mb-0">Güvenlik & Şifre</h5>
+                </div>
+
+                <form asp-action="ChangePassword" method="post">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Mevcut Şifre</label>
+                            <input type="password" name="currentPassword" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Yeni Şifre</label>
+                            <input type="password" name="newPassword" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label smallest text-muted text-uppercase fw-bold">Şifre Onay</label>
+                            <input type="password" name="confirmPassword" class="form-control" required />
+                        </div>
+                    </div>
+                    <hr class="border-secondary opacity-20 my-4">
+                    <button type="submit" class="btn btn-outline-danger px-5 rounded-pill fw-bold">ŞİFREYİ GÜNCELLE</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -101,6 +190,9 @@
 <div class="modal fade" id="certModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 bg-transparent">
+            <!-- Close Button (Top Right) -->
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-index-10" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10001;"></button>
+            
             <div class="gb-certificate-card landscape">
                 <!-- Certificate Border Decor -->
                 <div class="cert-border"></div>
@@ -115,7 +207,10 @@
                     </div>
 
                     <p class="cert-intro">Bu sertifika, üstün performans ve verimlilik gösteren</p>
-                    <h2 class="cert-user-name">@Model.FullName</h2>
+                    <div class="mb-4">
+                        <h2 class="cert-user-name mb-0">@Model.FullName</h2>
+                        <div class="cert-user-role text-muted fw-bold">(@Model.Role.ToUpper())</div>
+                    </div>
                     <p class="cert-text">
                         kişisinin GoldBranch AI ekosisteminde toplam <strong>@Model.ExperiencePoints XP</strong> 
                         deneyim puanına ulaştığını ve <strong>@Model.TodoTasks.Count(t => t.IsCompleted)</strong> 
@@ -157,28 +252,55 @@
     .gb-certificate-card {
         background: #fff;
         color: #1a1a1a;
-        padding: 60px;
+        padding: 40px;
         position: relative;
         overflow: hidden;
-        width: 1000px;
-        height: 700px;
+        width: 100%;
+        max-width: 900px;
+        min-height: 600px;
         margin: 0 auto;
-        box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transform: translateZ(0); /* Fix for potential clipping */
     }
-    .cert-border { position: absolute; inset: 20px; border: 2px solid #fbbf24; }
-    .cert-corner { position: absolute; width: 60px; height: 60px; border: 8px solid #fbbf24; }
+    .cert-border { position: absolute; inset: 15px; border: 2px solid #fbbf24; pointer-events: none; }
+    .cert-corner { position: absolute; width: 40px; height: 40px; border: 6px solid #fbbf24; pointer-events: none; }
     .cert-corner.tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
     .cert-corner.tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
     .cert-corner.bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
     .cert-corner.br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
 
-    .cert-brand { font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: 5px; color: #111; }
+    .cert-brand { font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: 5px; color: #111; font-size: 2rem; }
     .cert-badge { display: inline-block; background: #fbbf24; color: #fff; padding: 5px 20px; font-weight: 800; font-size: 0.8rem; margin-top: 10px; }
-    .cert-user-name { font-size: 3.5rem; font-weight: 800; color: #fbbf24; margin: 20px 0; text-transform: uppercase; }
-    .cert-text { font-size: 1.2rem; line-height: 1.8; color: #444; max-width: 80%; margin: 0 auto; }
+    .cert-user-name { font-size: 2.5rem; font-weight: 800; color: #fbbf24; margin: 10px 0; text-transform: uppercase; line-height: 1; }
+    .cert-user-role { font-size: 1.2rem; color: #666; letter-spacing: 2px; }
+    .cert-text { font-size: 1.1rem; line-height: 1.6; color: #444; max-width: 85%; margin: 15px auto; }
     
-    .e-signature { font-family: 'Dancing Script', cursive; font-size: 2rem; color: #111; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
-    .cert-seal { width: 100px; height: 100px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff; box-shadow: 0 0 0 10px rgba(251,191,36,0.1); }
+    .e-signature { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: #111; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+    .cert-seal { width: 80px; height: 80px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; box-shadow: 0 0 0 8px rgba(251,191,36,0.1); }
+    
+    @@media (max-width: 768px) {
+        .gb-certificate-card { padding: 20px; min-height: auto; }
+        .cert-user-name { font-size: 1.8rem; }
+        .cert-text { font-size: 0.9rem; }
+        .cert-brand { font-size: 1.5rem; }
+    }
+    
+    /* FIX FOR MODAL BLUR AND LAYER CLASHING */
+    #certModal {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(8px);
+    }
+    .modal-backdrop {
+        display: none !important; /* Remove standard backdrop to prevent double-blur/split issue */
+    }
+    .modal-open {
+        overflow: hidden !important;
+        padding-right: 0 !important;
+    }
     
     @@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
@@ -215,11 +337,10 @@
         }
     });
 
+    // TEST TELEGRAM
     document.getElementById('btnTestTelegram').addEventListener('click', async function() {
         const btn = this;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
-
         try {
             const response = await fetch('/Settings/TestTelegram', { method: 'POST' });
             const data = await response.json();

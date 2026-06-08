@@ -30,6 +30,7 @@ namespace GoldBranchAI.Models
         public string? AvatarUrl { get; set; }
         public string? Bio { get; set; }
         public string? TelegramChatId { get; set; }
+        public string? DiscordWebhookUrl { get; set; }
 
         // AI Sağlayıcı Tercihleri
         public string PreferredAiProvider { get; set; } = "default"; // default, openai, gemini, anthropic, cohere, sambanova

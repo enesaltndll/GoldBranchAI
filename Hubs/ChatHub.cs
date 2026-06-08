@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
 namespace GoldBranchAI.Hubs
 {
     public class ChatHub : Hub
     {
-        private static readonly Dictionary<string, string> _onlineUsers = new Dictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> _onlineUsers = new ConcurrentDictionary<string, string>();
 
         public override async Task OnConnectedAsync()
         {

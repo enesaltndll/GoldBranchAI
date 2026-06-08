@@ -240,7 +240,8 @@
           <span class="gb-ticker-item"><i class="fa-solid fa-clock me-1"></i> SYNC: <span class="text-info">${timestamp}</span></span>
           <span class="gb-ticker-item"><i class="fa-solid fa-shield-halved me-1"></i> FIREWALL: <span class="text-success">ACTIVE</span></span>
         `;
-        ticker.innerHTML = content + content; // Double for seamless loop if using CSS marquee
+        const separator = '<span class="gb-ticker-separator" style="opacity:0.2; margin: 0 50px;">| | | | |</span>';
+        ticker.innerHTML = content + separator + content;
       })
       .catch(() => {
         ticker.innerHTML = '<span class="gb-ticker-item text-danger">SYSTEM OFFLINE</span>';
@@ -590,7 +591,6 @@
       ".gb-btn-shine { position: relative; overflow: hidden; }\n" +
       ".gb-btn-shine::after { content: ''; position: absolute; top: -50%; left: -50%; width: 20%; height: 200%; background: rgba(255,255,255,0.4); transform: rotate(45deg); filter: blur(5px); opacity: 0; transition: 0s; }\n" +
       ".gb-btn-shine:hover::after { animation: shineSweep 0.8s ease forwards; opacity: 1; }\n" +
-      ".form-control:focus { box-shadow: 0 0 0 3px rgba(34,211,238,0.25), 0 0 15px rgba(251,191,36,0.15) !important; border-color: rgba(34,211,238,0.6) !important; }\n" +
       ".card { transition: box-shadow 0.3s ease, border-color 0.3s ease; }\n" +
       ".card:hover { border-color: rgba(255,255,255,0.1) !important; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }";
     document.head.appendChild(style);

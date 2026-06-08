@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldBranch AI - Kullanım Kılavuzu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            line-height: 1.7;
+            background: #f1f5f9;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 22mm;
+            margin: 10mm auto;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            page-break-after: always;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3mm;
+            margin-bottom: 8mm;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 30mm 15mm;
+        }
+        h2.section-title {
+            font-size: 1.4rem;
+            border-left: 4px solid #d97706;
+            padding-left: 4mm;
+            margin-top: 5mm;
+            margin-bottom: 6mm;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        h3.subsection-title {
+            font-size: 1.1rem;
+            margin-top: 5mm;
+            margin-bottom: 3mm;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        p {
+            margin-bottom: 4mm;
+            font-size: 0.92rem;
+            text-align: justify;
+            color: #334155;
+        }
+        ul, ol {
+            margin: 0 0 5mm 6mm;
+            font-size: 0.92rem;
+            color: #334155;
+        }
+        li {
+            margin-bottom: 2mm;
+        }
+        .note {
+            background: #fffbeb;
+            border-left: 4px solid #d97706;
+            padding: 12px 18px;
+            margin: 5mm 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.88rem;
+            color: #78350f;
+        }
+        .warn {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 18px;
+            margin: 5mm 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.88rem;
+            color: #991b1b;
+        }
+        .tbl {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 4mm 0;
+            font-size: 0.88rem;
+        }
+        .tbl th {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .tbl td {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 3mm;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+        .toc-list {
+            list-style: none;
+            margin-left: 0;
+        }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4mm;
+            font-size: 0.95rem;
+        }
+        .toc-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted #cbd5e1;
+            margin: 0 6px;
+        }
+        .toc-page {
+            font-weight: 700;
+            color: #d97706;
+        }
+        @media print {
+            body {
+                background: #fff;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÜST KONTROL PANELİ -->
+    <div class="no-print" style="position: fixed; top: 15px; right: 15px; z-index: 9999; background: #fff; padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+        <button onclick="window.print()" style="border: none; background: #d97706; color: #fff; padding: 8px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: background 0.2s;">
+            📄 PDF Olarak Kaydet / Yazdır
+        </button>
+    </div>
+
+    <!-- 1. SAYFA: KAPAK -->
+    <div class="page cover">
+        <div style="border-bottom: 2px solid #d97706; padding-bottom: 6mm; width: 100%;">
+            <div style="font-size: 1.4rem; font-weight: 800; letter-spacing: 1px; color: #0f172a;">T.C. SİNOP ÜNİVERSİTESİ</div>
+            <div style="font-size: 1.1rem; font-weight: 600; color: #64748b; margin-top: 2mm;">AYANCIK MESLEK YÜKSEKOKULU</div>
+            <div style="font-size: 1.1rem; font-weight: 600; color: #64748b;">İNTERNET VE AĞ TEKNOLOJİLERİ BÖLÜMÜ</div>
+        </div>
+        
+        <div style="margin: 10mm auto 5mm auto; display: flex; justify-content: center; align-items: center;">
+            <img src="sinop_uni_logo.png" alt="T.C. Sinop Üniversitesi Logosu" style="height: 180px; width: 180px; object-fit: contain;">
+        </div>
+        
+        <div style="margin: auto 0;">
+            <div style="background: #fef3c7; color: #d97706; font-weight: 800; padding: 3mm 6mm; border-radius: 30px; display: inline-block; font-size: 0.85rem; letter-spacing: 1.5px; margin-bottom: 6mm; text-transform: uppercase;">
+                Sistem Analizi ve Tasarımı Dersi
+            </div>
+            <h1 style="font-size: 2.8rem; font-weight: 900; color: #0f172a; line-height: 1.2; letter-spacing: -1px;">GOLDBRANCH AI</h1>
+            <p style="font-size: 1.4rem; color: #64748b; text-align: center; margin-top: 2mm; font-weight: 500;">
+                Proje Raporu & Kullanım Kılavuzu
+            </p>
+            <div style="display: flex; gap: 3mm; justify-content: center; margin-top: 6mm;">
+                <span style="background: #f1f5f9; padding: 2mm 4mm; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #475569;">.NET 8.0 MVC</span>
+                <span style="background: #f1f5f9; padding: 2mm 4mm; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #475569;">Entity Framework Core</span>
+                <span style="background: #f1f5f9; padding: 2mm 4mm; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #475569;">SignalR</span>
+                <span style="background: #f1f5f9; padding: 2mm 4mm; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #475569;">Multi-Model AI</span>
+            </div>
+        </div>
+        
+        <div style="width: 100%; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 8mm; text-align: left;">
+            <div>
+                <div style="font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; color: #0f172a; text-transform: uppercase; margin-bottom: 1mm;">HAZIRLAYAN</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Enes ALTINDAL</div>
+                <div style="font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; color: #0f172a; text-transform: uppercase; margin-top: 3mm; margin-bottom: 1mm;">ÖĞRENCİ NUMARASI</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">247017024</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; color: #0f172a; text-transform: uppercase; margin-bottom: 1mm;">DERS SORUMLUSU</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Öğr. Gör. Ekrem SAYDAM</div>
+                <div style="font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; color: #0f172a; text-transform: uppercase; margin-top: 3mm; margin-bottom: 1mm;">TARIH</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Haziran 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SAYFA: İÇİNDEKİLER -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>İçindekiler</span>
+        </div>
+        
+        <h2 class="section-title" style="margin-top: 10mm; margin-bottom: 10mm;">İÇİNDEKİLER</h2>
+        
+        <ul class="toc-list">
+            <li class="toc-item"><span>1. Giriş ve Proje Vizyonu</span><span class="toc-dots"></span><span class="toc-page">3</span></li>
+            <li class="toc-item"><span>2. Kullanılan Teknolojiler</span><span class="toc-dots"></span><span class="toc-page">4</span></li>
+            <li class="toc-item"><span>3. Sisteme Giriş ve Kimlik Doğrulama</span><span class="toc-dots"></span><span class="toc-page">5</span></li>
+            <li class="toc-item"><span>4. Çalışma Masası ve Görev Yönetimi</span><span class="toc-dots"></span><span class="toc-page">6</span></li>
+            <li class="toc-item"><span>5. Kanban Tahtası ve Görev Akışı</span><span class="toc-dots"></span><span class="toc-page">6</span></li>
+            <li class="toc-item"><span>6. Yapay Zekâ (AI) Modülleri</span><span class="toc-dots"></span><span class="toc-page">7</span></li>
+            <li class="toc-item"><span>7. Sesli Asistan (Goldie)</span><span class="toc-dots"></span><span class="toc-page">8</span></li>
+            <li class="toc-item"><span>8. Zen Modu ve Oyunlaştırma</span><span class="toc-dots"></span><span class="toc-page">8</span></li>
+            <li class="toc-item"><span>9. Abonelik (SaaS) ve Ödeme Sistemi</span><span class="toc-dots"></span><span class="toc-page">9</span></li>
+            <li class="toc-item"><span>10. Canlı Sohbet ve Video Konferans</span><span class="toc-dots"></span><span class="toc-page">9</span></li>
+            <li class="toc-item"><span>11. Yönetim (Admin) Paneli</span><span class="toc-dots"></span><span class="toc-page">10</span></li>
+            <li class="toc-item"><span>12. Çok Kanallı Bildirim Motoru</span><span class="toc-dots"></span><span class="toc-page">11</span></li>
+            <li class="toc-item"><span>13. Profil ve Ayarlar</span><span class="toc-dots"></span><span class="toc-page">11</span></li>
+            <li class="toc-item"><span>14. Bilinen Mantıksal Hatalar ve Algoritmasal Notlar</span><span class="toc-dots"></span><span class="toc-page">12</span></li>
+            <li class="toc-item"><span>15. Sonuç</span><span class="toc-dots"></span><span class="toc-page">12</span></li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 2</span>
+        </div>
+    </div>
+
+    <!-- 3. SAYFA: GİRİŞ -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 1</span>
+        </div>
+        
+        <h2 class="section-title">1. GİRİŞ VE PROJE VİZYONU</h2>
+        <p>
+            <strong>GoldBranch AI</strong>; modern yazılım geliştirme süreçlerinde ekiplerin koordinasyonunu, görev takibini, yapay zekâ destekli iş planlamasını ve oyunlaştırma mekaniklerini tek bir çatı altında birleştiren bulut tabanlı bir proje yönetim platformudur.
+        </p>
+        <p>
+            Proje, Sinop Üniversitesi Ayancik Meslek Yüksekokulu Bilgisayar Teknolojileri Bölümü "Sistem Analizi ve Tasarımı" dersi kapsamında 10 haftalık bir geliştirme süreci boyunca tasarlanmış ve kodlanmıştır. Toplamda 200 saatlik iş yükünün haftalara dağılımı ve planlaması sunum slaytlarında detaylandırılmıştır.
+        </p>
+        <p><strong>Projenin temel hedefleri şunlardır:</strong></p>
+        <ul>
+            <li>Yapay zekâ desteğiyle akıllı görev parçalama, önceliklendirme ve otomatik süre tahminleri gerçekleştirmek,</li>
+            <li>SignalR kütüphanesi kullanarak gerçek zamanlı ekip içi iletişim ve görüntülü video konferans odaları oluşturmak,</li>
+            <li>Oyunlaştırma (XP puanları, rozetler, yılan oyunu) mekanikleri sayesinde geliştirici motivasyonunu en üst seviyede tutmak,</li>
+            <li>SaaS (Yazılım Servisi) standartlarında üyelik paketleri, promosyon kodu yapılandırması ve faturalandırma altyapısı sunmak,</li>
+            <li>Çok kanallı bildirim sistemiyle (E-posta, Telegram, Discord) kesintisiz durum takibi sağlamaktır.</li>
+        </ul>
+        <p>
+            Uygulama; rol tabanlı yetkilendirme (RBAC) ile korunmakta olup, Admin, Proje Şefi ve Geliştirici rolleri üzerinden güvenli işlem sınırları çizer.
+        </p>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 3</span>
+        </div>
+    </div>
+
+    <!-- 4. SAYFA: TEKNOLOJİLER -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 2</span>
+        </div>
+        
+        <h2 class="section-title">2. KULLANILAN TEKNOLOJİLER</h2>
+        <p>
+            Uygulama geliştirilirken esneklik, performans ve modern mimari standartları ön planda tutulmuştur. Kullanılan temel teknolojiler aşağıda kategorize edilmiştir:
+        </p>
+        
+        <h3 class="subsection-title">2.1 Arka Uç (Backend) Altyapısı</h3>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Teknoloji / Kütüphane</th>
+                    <th>Kullanım Amacı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>C# / .NET 8.0 MVC</td>
+                    <td>Uygulama iskeleti, yönlendirme (routing), güvenli oturum yönetimi ve servis yapısı.</td>
+                </tr>
+                <tr>
+                    <td>Entity Framework Core</td>
+                    <td>Veritabanı erişim katmanı ve veri eşleme (ORM) süreçleri (Code-First yaklaşımı).</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>Güvenli ve ilişkisel veri saklama süreçleri.</td>
+                </tr>
+                <tr>
+                    <td>SignalR</td>
+                    <td>Anlık sohbet mesajları, canlı bildirimler ve liderlik tablosu güncellemeleri.</td>
+                </tr>
+                <tr>
+                    <td>BCrypt.Net</td>
+                    <td>Kullanıcı şifrelerinin tek yönlü şifrelenmesi (hashing) ve güvenlik kontrolü.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="subsection-title">2.2 Ön Uç (Frontend) ve Entegrasyonlar</h3>
+        <ul>
+            <li><strong>Bootstrap 5.3 ve Özelleştirilmiş CSS:</strong> Fütüristik koyu mod teması, modern yazı tipleri ve kart tasarımları.</li>
+            <li><strong>Web Speech API:</strong> Tarayıcı tabanlı konuşma tanıma (Speech-to-Text) ve ses sentezleme (Text-to-Speech) altyapısı.</li>
+            <li><strong>Chart.js & Canvas API:</strong> Geliştirici performans radarı, iş yoğunluğu grafikleri ve dinamik sertifika oluşturucu.</li>
+            <li><strong>Jitsi Meet API:</strong> Üçüncü parti WebRTC tabanlı görüntülü ve sesli toplantı odaları.</li>
+            <li><strong>Entegre Bildirim Servisleri:</strong> Telegram Bot API, Discord Webhook ve SMTP Mail sistemi.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 4</span>
+        </div>
+    </div>
+
+    <!-- 5. SAYFA: KİMLİK DOĞRULAMA -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 3</span>
+        </div>
+        
+        <h2 class="section-title">3. SİSTEME GİRİŞ VE KİMLİK DOĞRULAMA</h2>
+        <p>
+            GoldBranch AI sisteminin giriş ve kayıt aşamaları, güvenlik standartları çerçevesinde yapılandırılmıştır. Uygulamaya erişim sağlamak için iki temel yöntem bulunur:
+        </p>
+
+        <h3 class="subsection-title">3.1 Standart Kimlik Doğrulama (Local Auth)</h3>
+        <p>
+            Kullanıcılar e-posta adresleri ve şifreleri ile kayıt olabilirler. Kayıt esnasında şifreler doğrudan veritabanına yazılmak yerine <strong>BCrypt</strong> ile şifrelenir. Kayıt başarılı olduğunda kullanıcıya otomatik bir hoş geldin e-postası iletilir.
+        </p>
+
+        <h3 class="subsection-title">3.2 GitHub OAuth 2.0 Entegrasyonu</h3>
+        <p>
+            Geliştiriciler için hızlı ve pratik erişim sağlamak amacıyla sisteme GitHub ile giriş butonu eklenmiştir. GitHub ile giriş yapıldığında kullanıcının adı, e-postası ve varsa profil fotoğrafı otomatik olarak çekilir.
+        </p>
+
+        <div class="note">
+            <strong>Sistem Test ve Değerlendirme Giriş Bilgileri:</strong>
+            <table class="tbl" style="margin: 2mm 0 0 0; background: #fff;">
+                <thead>
+                    <tr>
+                        <th>Rol Yetkisi</th>
+                        <th>E-posta Adresi</th>
+                        <th>Şifre</th>
+                        <th>Açıklama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Admin (Yönetici)</strong></td>
+                        <td>admin@test.com</td>
+                        <td>123</td>
+                        <td>Tüm sisteme erişim ve yönetim yetkisi.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Geliştirici</strong></td>
+                        <td>ediz@test.com</td>
+                        <td>ediz123</td>
+                        <td>Standart görev takibi ve geliştirici özellikleri.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="subsection-title">3.3 Rol Yetki Dağılımı</h3>
+        <p>
+            Kullanıcılar sistemde rollerine göre yetkilendirilirler. <strong>Admin</strong> tüm sistemi yönetebilir, veritabanı işlemlerini sıfırlayabilir ve kullanıcı silip ekleyebilir. <strong>Proje Şefi</strong> görev oluşturup bunları geliştiricilere atayabilir ve yapay zekâ asistanlarını yönetebilir. <strong>Geliştirici</strong> ise sadece kendine atanan görevleri günceller, yorum yazar ve oyunlaştırma özelliklerini kullanır.
+        </p>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 5</span>
+        </div>
+    </div>
+
+    <!-- 6. SAYFA: ÇALIŞMA MASASI VE KANBAN -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 4-5</span>
+        </div>
+        
+        <h2 class="section-title">4. ÇALIŞMA MASASI VE GÖREV YÖNETİMİ</h2>
+        <p>
+            Giriş yapan kullanıcıyı karşılayan <strong>Çalışma Masası (Working Desk)</strong> ekranı, tüm projelerin ve aktif görevlerin izlenebildiği bir yönetim kokpitidir.
+        </p>
+        <ul>
+            <li><strong>Proje Zaman Makinesi (Project Time Machine):</strong> Ekranın üst kısmında bulunan kaydırıcı (slider) sayesinde projenin geçmiş günlerdeki durumu simüle edilebilir. Seçilen güne gidildiğinde o gün aktif olan görevler listelenir.</li>
+            <li><strong>Sinirsel Yük Endeksi (Neural Load Index):</strong> Yapay zekâ, geliştiricinin üzerindeki aktif iş yükünü, teslim tarihlerini ve tahmini süreleri analiz ederek stres seviyesini (Düşük, Dengeli, Yüksek, Kritik) hesaplar ve çözüm tavsiyeleri sunar.</li>
+            <li><strong>Aciliyet Skoru (Urgency Score):</strong> Görevler, arkada çalışan bir formül sayesinde önceliklendirilir:
+                <br><code>Skor = (Risk Oranı * 1000) * Bağımlılık Cezası + (Kalan Efor * 50) + (1000 / (Kalan Saat + 1))</code>
+            </li>
+        </ul>
+
+        <h2 class="section-title">5. KANBAN TAHTASI VE GÖREV AKIŞI</h2>
+        <p>
+            Görevlerin durum geçişleri, sürükle-bırak (drag-and-drop) destekli <strong>Kanban Tahtası</strong> üzerinde gerçekleştirilir. Görevler 4 farklı aşamada ilerler: <em>Bekliyor</em>, <em>Devam Ediyor</em>, <em>Onay Bekliyor</em> ve <em>Tamamlandı</em>.
+        </p>
+        <p><strong>Öne Çıkan Güvenlik ve Yardımcı Mekanizmalar:</strong></p>
+        <ul>
+            <li><strong>Görev Bağımlılık Kilidi (Task Lock):</strong> Bir görevin başlayabilmesi başka bir göreve bağlıysa (örneğin: tasarım bitmeden kodlamaya geçilemez), bağımlı olunan görev tamamlanana kadar Kanban kartı kilitlenir ve sürüklenemez.</li>
+            <li><strong>Dosya Eki Desteği:</strong> Geliştiriciler görev kartlarına PDF, zip veya resim dosyaları ekleyebilirler. Bu dosyalar sunucuda güvenli şekilde depolanır.</li>
+            <li><strong>Yapay Zekâ Başarı Olasılığı:</strong> Görev detaylarında, teslim tarihine ve efor durumuna göre görevin zamanında tamamlanma ihtimali yüzde (%) olarak dinamik hesaplanır.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 6</span>
+        </div>
+    </div>
+
+    <!-- 7. SAYFA: YAPAY ZEKA MODÜLLERİ -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 6</span>
+        </div>
+        
+        <h2 class="section-title">6. YAPAY ZEKÂ (AI) MODÜLLERİ</h2>
+        <p>
+            GoldBranch AI, projelerin yönetimini kolaylaştırmak için çoklu yapay zekâ modeli (Gemini, Cohere, SambaNova/Llama) desteği sunar. Bu kapsamda öne çıkan araçlar şunlardır:
+        </p>
+
+        <h3 class="subsection-title">6.1 Yapay Zekâ Destekli Görev Parçalama (AI Breakdown)</h3>
+        <p>
+            Proje Şefi veya Admin tarafından girilen genel proje tanımı, bütçe, programlama dili ve süre kısıtları yapay zekâ tarafından analiz edilir. AI, projenin tamamlanabilmesi için gerekli olan mikro alt görevleri, süre tahminlerini (adam/saat) ve görev bağımlılıklarını otomatik olarak çıkarır. Şefin onayıyla tüm bu görevler tek tıkla Kanban tahtasına aktarılır.
+        </p>
+
+        <h3 class="subsection-title">6.2 Geliştirici Teknik Araştırma Asistanı</h3>
+        <p>
+            Geliştiriciler, karşılaştıkları teknik zorlukları veya kodlama sorularını sistem içerisindeki sohbet modülü üzerinden yapay zekâya iletebilirler. AI, geliştiriciye açıklamalı kod örnekleri ve çözüm önerileri sunar. Bu konuşmalar "Yapay Zekâ Hafızası" (Memory Logs) altında saklanır.
+        </p>
+
+        <h3 class="subsection-title">6.3 Akıllı Görev Önceliklendirme ve Sohbet Özetleme</h3>
+        <ul>
+            <li><strong>Görev Önceliklendirme:</strong> Aktif iş listesini analiz ederek teslim sürelerine göre kritik görevleri sıralar ve gerekçelerini açıklar.</li>
+            <li><strong>Sohbet Özeti (Chat Summarization):</strong> Proje gruplarındaki son 50 sohbet mesajını analiz ederek alınan kararları ve atanan görevleri yöneticiye özet rapor olarak sunar.</li>
+            <li><strong>Akademik Ödev Üretici:</strong> Eğitim amaçlı kullanımlarda üniversite, bölüm ve konu girilerek taslak odev içerikleri üretilmesini sağlar.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 7</span>
+        </div>
+    </div>
+
+    <!-- 8. SAYFA: SESLİ ASİSTAN VE ZEN MODU -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 7-8</span>
+        </div>
+        
+        <h2 class="section-title">7. SESLİ ASİSTAN (GOLDIE)</h2>
+        <p>
+            Eller serbest modunda çalışmayı sağlamak amacıyla <strong>Goldie</strong> adı verilen sesli asistan geliştirilmiştir. Web Speech API tabanlı çalışan bu modül, kullanıcının konuşmasını analiz eder:
+        </p>
+        <ul>
+            <li><strong>Sesli Görev Oluşturma:</strong> "Geliştirici Ediz'e yarına kadar teslim edilecek veritabanı tasarımı görevi ekle" komutu verildiğinde, ses metne dönüştürülür ve yapay zekâya iletilir. AI; başlık, açıklama, atanacak kişi ve tarihi tespit ederek görevi veritabanına otomatik olarak kaydeder.</li>
+            <li><strong>Sesli Sayfa Yönlendirmesi:</strong> "Kanban tahtasını aç", "Çalışma masasına git" veya "Koyu modu etkinleştir" gibi komutlarla arayüz geçişleri sesle kontrol edilebilir.</li>
+            <li><strong>Ses Sentezleme Geri Bildirimi:</strong> Goldie, komutları uyguladıktan sonra kullanıcıya sesli olarak (Türkçe/İngilizce) durum bildirimi yapar.</li>
+        </ul>
+
+        <h2 class="section-title">8. ZEN MODU VE OYUNLAŞTIRMA</h2>
+        <p>
+            Yazılım geliştiricilerin iş stresini azaltmak ve çalışma verimliliğini artırmak amacıyla oyunlaştırma mekanikleri sisteme entegre edilmiştir:
+        </p>
+        <ul>
+            <li><strong>Deneyim Puanı (XP) ve Seviye Sistemi:</strong> Geliştiriciler görev tamamladıkça, yorum yazdıkça veya projelerde aktif rol aldıkça XP kazanırlar. Belirli XP eşiklerinde rütbeleri (Rising Star, Veteran Player, Elite Developer, Legendary Master) güncellenir ve rozet kazanırlar.</li>
+            <li><strong>Klasik Yılan Oyunu (Snake Game):</strong> Çalışmaya ara vermek ve stres atmak isteyen geliştiriciler için Zen Modu altında yılan oyunu sunulur. Canlı liderlik tablosu sayesinde ekipler arasında tatlı bir rekabet ortamı oluşturulur.</li>
+            <li><strong>Abonelik İndirim Kodu Ödülü:</strong> Yılan oyununda 30 ve üzeri skor elde eden kullanıcılara sistem otomatik olarak <em>"SNAKESILVER24"</em> kodunu sunarak Silver pakette 1 ay hediye tanımlar.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 8</span>
+        </div>
+    </div>
+
+    <!-- 9. SAYFA: SAAS VE İLETİŞİM -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 9-10</span>
+        </div>
+        
+        <h2 class="section-title">9. ABONELİK (SAAS) VE ÖDEME ALTYAPISI</h2>
+        <p>
+            GoldBranch AI, ticari kullanıma uygun üyelik limitlendirme (SaaS) yapısı barındırmaktadır. Dört temel üyelik katmanı mevcuttur:
+        </p>
+        <ul>
+            <li><strong>Free (Geliştirici) Planı:</strong> Temel görev takibi, arkadaş ekleme, sınırlı sayıda AI kredisi.</li>
+            <li><strong>Silver (Başlangıç) Planı:</strong> Genişletilmiş görev kapasitesi ve detaylı grafik analizleri.</li>
+            <li><strong>Gold (Pro) Planı:</strong> Sınırsız AI breakdown, sesli asistan kullanımı ve Excel raporu dışa aktarma yetkisi.</li>
+            <li><strong>Diamond (Business) Planı:</strong> Tükenmişlik ısı haritası, sohbet özetleme ve haftalık AI sprint raporları.</li>
+        </ul>
+        <p><strong>Oyunlaştırma Tabanlı İndirim Algoritması:</strong></p>
+        <p>
+            Kullanıcıların kazandığı başarı rozeti sayısı ve yılan oyunu yüksek skorlarına göre abonelik fiyatlarında dinamik indirim uygulanır. Her rozet %5, Snake yüksek skorunun 50+ olması ise ekstra %5 indirim sağlar (Maksimum indirim oranı %25 ile sınırlıdır). Ödemeler demo kart bilgileriyle simüle edilir.
+        </p>
+
+        <h2 class="section-title">10. CANLI SOHBET VE VİDEO KONFERANS</h2>
+        <p>
+            Ekip içi iletişim süreçleri harici bir platforma ihtiyaç duyulmadan sistem içerisinde çözülür:
+        </p>
+        <ul>
+            <li><strong>SignalR Canlı Mesajlaşma:</strong> Kullanıcılar arkadaş listelerindeki kişilerle özel (DM) olarak veya Proje Şeflerinin kurduğu departman gruplarında anlık olarak yazışabilirler. Mesajlar sayfayı yenilemeye gerek kalmadan iletilir.</li>
+            <li><strong>Yönetici Denetimi:</strong> Admin ve Proje Şefleri uygunsuz mesajları silebilir veya sohbet gruplarını tamamen kapatabilirler.</li>
+            <li><strong>Jitsi Görüntülü Toplantı:</strong> Proje Şefleri tek tıkla canlı video konferans odası başlatabilir. Ekip üyeleri bu odaya katılarak ses, görüntü ve ekran paylaşımı gerçekleştirebilirler.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 9</span>
+        </div>
+    </div>
+
+    <!-- 10. SAYFA: ADMIN PANELI -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 11</span>
+        </div>
+        
+        <h2 class="section-title">11. YÖNETİM (ADMIN) PANELİ VE ANALİZLER</h2>
+        <p>
+            Sistem yöneticileri (Admin) ve Proje Şefleri için tasarlanan yönetim paneli, platformun genel sağlığını ve ekip performansını takip etmeye yarayan gelişmiş izleme araçları sunar:
+        </p>
+
+        <h3 class="subsection-title">11.1 Performans Ligi ve Excel Çıktısı</h3>
+        <p>
+            Geliştiricilerin tamamladıkları görev sayılarına ve kazandıkları XP puanlarına göre sıralandığı bir liderlik tablosudur. Yöneticiler, bu verileri raporlama amacıyla <strong>ClosedXML</strong> kütüphanesi kullanarak tek tıkla Excel formatında indirebilirler.
+        </p>
+
+        <h3 class="subsection-title">11.2 Günlük Zaman Takibi ve Z-Raporu</h3>
+        <p>
+            Geliştiricilerin görevler üzerinde harcadıkları günlük mesailer (dakika bazında) otomatik olarak kaydedilir. Haftalık çalışma süreleri analiz edilerek Excel raporu olarak indirilebilir.
+        </p>
+
+        <h3 class="subsection-title">11.3 Geliştirici Tükenmişlik Isı Haritası (Burnout Map)</h3>
+        <p>
+            Diamond (Business) üyelerine özel olan bu harita, geliştiricilerin haftalık toplam çalışma sürelerini görselleştirir. Haftalık çalışma süresi normal sınırları aşan geliştiriciler kırmızı renk tonuyla vurgulanarak yöneticilere tükenmişlik (burnout) riski uyarısı verilir.
+        </p>
+
+        <h3 class="subsection-title">11.4 Sistem Günlükleri (Audit Logs) ve Seed Modülü</h3>
+        <ul>
+            <li><strong>Sistem Günlükleri:</strong> Güvenlik ihlalleri, ödemeler, rozet kazanımları ve veri tabanı değişiklikleri gibi tüm kritik işlemler arka planda otomatik loglanır ve son 50 işlem listelenir.</li>
+            <li><strong>Seed Modülü:</strong> Test süreçlerini kolaylaştırmak amacıyla, sadece Admin rolüne açık olacak şekilde korunan ve tek tıkla veritabanını test verileriyle dolduran özel bir kontrolcü (SeedController) yer alır.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 10</span>
+        </div>
+    </div>
+
+    <!-- 11. SAYFA: BILDIRIMLER VE AYARLAR -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 12-13</span>
+        </div>
+        
+        <h2 class="section-title">12. ÇOK KANALLI BİLDİRİM MOTORU</h2>
+        <p>
+            Sistemde gerçekleşen önemli olaylar (yeni görev atamaları, acil durumlar, duyurular) kullanıcılara 3 farklı entegrasyon kanalı üzerinden bildirilir:
+        </p>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Bildirim Kanalı</th>
+                    <th style="width: 35%;">Kullanım Alanı</th>
+                    <th>Yapılandırma Biçimi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>E-posta (SMTP)</strong></td>
+                    <td>Kayıt doğrulama, şifre sıfırlama linkleri ve resmi görev bildirimleri.</td>
+                    <td><code>appsettings.json</code> dosyası altındaki SmtpSettings alanından yapılandırılır.</td>
+                </tr>
+                <tr>
+                    <td><strong>Telegram Botu</strong></td>
+                    <td>Yeni görev atamalarında kullanıcıya anlık Telegram mesajı gönderme.</td>
+                    <td>Kullanıcı profil ayarlarından kendi <code>TelegramChatId</code> değerini kaydeder.</td>
+                </tr>
+                <tr>
+                    <td><strong>Discord Webhook</strong></td>
+                    <td>Proje kanallarına canlı görev güncellemeleri gönderme.</td>
+                    <td>Kullanıcı profil ayarlarından Discord Webhook URL adresini tanımlar.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="section-title">13. PROFİL VE KİŞİSELLEŞTİRME</h2>
+        <p>
+            Kullanıcılar kendi deneyimlerini özelleştirebilecekleri dinamik bir profil sayfasına sahiptirler. Bu sayfa üzerinden şu işlemler yapılabilir:
+        </p>
+        <ul>
+            <li><strong>Profil Kartı Güncelleme:</strong> Biyografi yazısı ekleme, şifre değiştirme ve profil fotoğrafı yükleme. Pro ve Business üyeler için hareketli (GIF) avatar desteği mevcuttur.</li>
+            <li><strong>Dil ve Arayüz Tercihleri:</strong> Sistem Türkçe ve İngilizce dillerini desteklemektedir. Tercih edilen dil kaydedildiğinde tüm arayüz anında güncellenir.</li>
+            <li><strong>Aktivite Yoğunluk Haritası:</strong> Son 120 günde tamamlanan görevlerin yoğunluğunu GitHub tarzında yeşil renk tonlarıyla gösteren görsel harita.</li>
+            <li><strong>Masaüstü Sertifikası:</strong> Kazanılan rozetler ve puanlar doğrultusunda HTML5 Canvas ile dinamik başarı sertifikası üretilir ve indirilebilir.</li>
+        </ul>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 11</span>
+        </div>
+    </div>
+
+    <!-- 12. SAYFA: MANTIK HATALARI VE SONUÇ -->
+    <div class="page">
+        <div class="page-header">
+            <span>GOLDBRANCH AI KULLANIM KILAVUZU</span>
+            <span>Bölüm 14-15</span>
+        </div>
+        
+        <h2 class="section-title">14. BİLİNEN MANTIKSAL HATALAR VE ALGORİTMASAL NOTLAR</h2>
+        <p>
+            Geliştirme sürecinin kısıtları ve sistem mimarisi tasarımı nedeniyle bilinen bazı mantıksal durumlar ve bunların çözümleri aşağıda belgelenmiştir:
+        </p>
+        
+        <h3 class="subsection-title">14.1 Veritabanı İlişkileri ve Manuel Cascade Silme İşlemi</h3>
+        <p>
+            Veritabanı şemasında bazı tablolarda ilişkisel bütünlük gereği doğrudan "ON DELETE CASCADE" yapısı kurulmamıştır. Bu durum, Admin panelinden bir geliştirici silinmek istendiğinde yabancı anahtar (Foreign Key) kısıtlaması nedeniyle SQL hatası vermekteydi. Bu sorun, <code>AdminController.cs</code> içerisinde silme işlemi gerçekleştirilmeden önce ilgili kullanıcının tüm bildirimlerinin, rozetlerinin, arkadaşlıklarının, yorumlarının, görevlerinin, zaman loglarının ve mesajlarının kod tarafında sırayla silinmesi (manuel cascade) yöntemiyle aşılmıştır.
+        </p>
+
+        <h3 class="subsection-title">14.2 Zaman Makinesi Simülasyon Sınırı</h3>
+        <p>
+            Görevlerin geçmiş tarihlerdeki durumlarını gösteren Zaman Makinesi, görevlerin anlık durum değişim loglarını (State History) tutmadığı için sadece görevlerin oluşturulma (<code>CreatedAt</code>) ve tamamlanma (<code>CompletedAt</code>) tarihlerine bakarak filtreleme yapmaktadır. Bu nedenle, geçmiş günlerdeki ara aşamalar (örneğin bir görevin 3 gün önceki "Onay Bekliyor" statüsü) tam olarak geriye dönük gösterilememektedir.
+        </p>
+
+        <h3 class="subsection-title">14.3 SignalR ve Oturum Senkronizasyon Gecikmesi</h3>
+        <p>
+            Bir kullanıcının rolü yönetici tarafından değiştirildiğinde veya kullanıcı hesabı silindiğinde, SignalR Hub bağlantısı anlık olarak sonlandırılmaz. Kullanıcı tarayıcı sayfasını yenileyene kadar mevcut WebSocket bağlantısı üzerinden kısa bir süre daha mesaj iletmeye devam edebilir.
+        </p>
+
+        <h3 class="subsection-title">14.4 Faturalandırma Kredi Takibinin Bellek Tabanlı Olması</h3>
+        <p>
+            Abonelik planlarına ait yapay zekâ kredi tüketim limitleri dosya tabanlı ve bellek tabanlı (in-memory) çalışmaktadır. Uygulama havuzu (IIS Express / Kestrel) yeniden başladığında veya sunucu restart edildiğinde günlük harcanan AI kredi limitleri sıfırlanmaktadır.
+        </p>
+
+        <h3 class="subsection-title">14.5 Wellness Guardian ve Tarayıcı Sınırları</h3>
+        <p>
+            Mola uyarıları tarayıcı JS sayaçlarına (setInterval) bağlıdır. Tarayıcı sekmesi arka plana atıldığında Chrome/Edge kaynak tasarrufu sağlamak için JS sayaçlarını yavaşlatır. Bu durum bildirimlerin gecikmesine neden olabilir.
+        </p>
+
+        <h2 class="section-title">15. SONUÇ</h2>
+        <p>
+            <strong>GoldBranch AI</strong>; klasik görev yönetim araçlarının sınırlarını aşarak, akıllı yapay zekâ analizleri, anlık SignalR iletişimi, Jitsi görüntülü konferans desteği ve eğlenceli oyunlaştırma mekanikleriyle donatılmış modern bir yazılım çözümüdür.
+        </p>
+        <p>
+            Akademik standartlara uygun olarak hazırlanan platform, sıfır derleme hatası ve sıfır uyarı ile teslimata hazır hale getirilmiş durumdadır.
+        </p>
+
+        <div class="note">
+            <strong>Akademik Teslim Notu:</strong> Bu çalışma, Sinop Üniversitesi Ayancık Meslek Yüksekokulu İnternet ve Ağ Teknolojileri Bölümü Sistem Analizi ve Tasarımı dersi final projesi olarak <strong>Enes ALTINDAL</strong> tarafından, <strong>Öğr. Gör. Ekrem SAYDAM</strong> danışmanlığında başarıyla tamamlanmıştır.
+        </div>
+
+        <div class="footer">
+            <span>GoldBranch AI</span>
+            <span>Sayfa 12</span>
+        </div>
+    </div>
+
+</body>
+</html>

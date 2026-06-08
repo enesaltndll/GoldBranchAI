@@ -1,13 +1,17 @@
 using GoldBranchAI.Data;
 using GoldBranchAI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace GoldBranchAI.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
+        private readonly AppDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public ProfileController(AppDbContext context, IHttpClientFactory httpClientFactory)
@@ -62,11 +66,21 @@ namespace GoldBranchAI.Controllers
                 {
                     var client = _httpClientFactory.CreateClient();
                     client.DefaultRequestHeaders.Add("User-Agent", "GoldBranchAI-App");
-                    var response = await client.GetAsync($"https://api.github.com/users/{user.GithubUsername}/repos?sort=updated&per_page=6");
-                    if (response.IsSuccessStatusCode)
+                    
+                    // Repos
+                    var repoResponse = await client.GetAsync($"https://api.github.com/users/{user.GithubUsername}/repos?sort=updated&per_page=6");
+                    if (repoResponse.IsSuccessStatusCode)
                     {
-                        var json = await response.Content.ReadAsStringAsync();
+                        var json = await repoResponse.Content.ReadAsStringAsync();
                         ViewBag.GithubRepos = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+                    }
+
+                    // Profile Stats (Achievements)
+                    var profileResponse = await client.GetAsync($"https://api.github.com/users/{user.GithubUsername}");
+                    if (profileResponse.IsSuccessStatusCode)
+                    {
+                        var profileJson = await profileResponse.Content.ReadAsStringAsync();
+                        ViewBag.GithubProfile = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(profileJson);
                     }
                 }
                 catch { /* GitHub API hatası durumunda sessiz kal */ }

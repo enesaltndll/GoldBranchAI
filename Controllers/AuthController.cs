@@ -12,29 +12,35 @@ namespace GoldBranchAI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly EmailService _emailService;
+        private static bool _adminSeeded = false;
 
         public AuthController(AppDbContext context, EmailService emailService)
         {
             _context = context;
             _emailService = emailService;
-            SeedAdminUser();
+            if (!_adminSeeded) SeedAdminUser();
         }
 
         private void SeedAdminUser()
         {
-            if (!_context.Users.Any())
+            try
             {
-                var admin = new AppUser
+                if (!_context.Users.Any())
                 {
-                    FullName = "Enes Altındal (Admin)",
-                    Email = "admin@test.com",
-                    Password = BCrypt.Net.BCrypt.HashPassword("admin123"),
-                    Role = "Admin",
-                    TelegramChatId = "6208233846"
-                };
-                _context.Users.Add(admin);
-                _context.SaveChanges();
+                    var admin = new AppUser
+                    {
+                        FullName = "Enes ALTINDAL (Admin)",
+                        Email = "admin@test.com",
+                        Password = BCrypt.Net.BCrypt.HashPassword("123"),
+                        Role = "Admin",
+                        TelegramChatId = "6208233846"
+                    };
+                    _context.Users.Add(admin);
+                    _context.SaveChanges();
+                }
+                _adminSeeded = true;
             }
+            catch { /* İlk başlatmada DB henüz hazır değilse hata görmezden gel */ }
         }
 
         [HttpGet]

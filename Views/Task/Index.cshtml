@@ -337,7 +337,7 @@
                                 
                                 @if(isLocked)
                                 {
-                                    <div class="mb-2"><span class="badge bg-dark border border-danger text-danger w-100 text-start small"><i class="fa-solid fa-lock me-1"></i> Önce: @task.DependsOnTask.Title</span></div>
+                                    <div class="mb-2"><span class="badge bg-dark border border-danger text-danger w-100 text-start small"><i class="fa-solid fa-lock me-1"></i> Önce: @task.DependsOnTask!.Title</span></div>
                                 }
 
                                 @if (task.Status == "Onay Bekliyor")

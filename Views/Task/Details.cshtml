@@ -54,7 +54,7 @@
             <i class="fa-solid fa-lock fa-2x me-3"></i>
             <div>
                 <h5 class="mb-1 fw-bold text-danger">Bu Görev Kilitli</h5>
-                <p class="mb-0 text-light">Bu göreve başlamak veya eylem almak için öncelikle <a asp-action="Details" asp-route-id="@Model.DependsOnTaskId" class="text-info fw-bold text-decoration-underline">#@Model.DependsOnTask.Id - @Model.DependsOnTask.Title</a> görevinin tamamlanması gerekmektedir.</p>
+                <p class="mb-0 text-light">Bu göreve başlamak veya eylem almak için öncelikle <a asp-action="Details" asp-route-id="@Model.DependsOnTaskId" class="text-info fw-bold text-decoration-underline">#@Model.DependsOnTask!.Id - @Model.DependsOnTask!.Title</a> görevinin tamamlanması gerekmektedir.</p>
             </div>
         </div>
     }

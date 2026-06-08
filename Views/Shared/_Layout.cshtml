@@ -101,6 +101,7 @@
                         </a>
                     </li>
 
+
                     <!-- 💬 CHAT -->
                     <li>
                         <a class="gb-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Chat" ? "active" : "")" asp-controller="Chat" asp-action="Index" title="@L.Get("ChatRoom")">
@@ -133,6 +134,28 @@
                     @if (User?.Claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Proje Sefi" ||
                          User?.Claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value == "Admin")
                     {
+                        <!-- ➕ CREATE TASK (Proje Şefi / Admin Only) -->
+                        <li>
+                            <a class="gb-nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Create" ? "active" : "")" asp-controller="Task" asp-action="Create" title="Yeni Görev Ata" style="color:var(--gb-gold);">
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </a>
+                        </li>
+
+                        <!-- 📊 REPORTS (Proje Şefi / Admin Only) -->
+                        <li>
+                            <a class="gb-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "WorkReports" ? "active" : "")" asp-controller="Admin" asp-action="WorkReports" title="İş Raporları">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </a>
+                        </li>
+
+                        <!-- 🔥 BURNOUT MAP (Proje Şefi / Admin Only) -->
+                        <li>
+                            <a class="gb-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "BurnoutMap" ? "active" : "")" asp-controller="Admin" asp-action="BurnoutMap" title="Tükenmişlik Haritası">
+                                <i class="fa-solid fa-fire-flame-curved"></i>
+                            </a>
+                        </li>
+
+                        <!-- 🧠 AI AGENTS -->
                         <li>
                             <a class="gb-nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Breakdown" ? "active" : "")" asp-controller="Ai" asp-action="Breakdown" title="@L.Get("AjanMerkezi")" style="color:var(--gb-accent-violet);">
                                 <i class="fa-solid fa-brain"></i>
@@ -462,14 +485,17 @@
                     });
                     
                 // Mark as read when clicking the bell
-                document.getElementById('notificationDropdown').addEventListener('click', function() {
-                    if (unreadCount > 0) {
-                        fetch('/Notification/MarkAsRead', { method: 'POST' }).then(() => {
-                            badge.style.display = "none";
-                            unreadCount = 0;
-                        });
-                    }
-                });
+                const notifDropdown = document.getElementById('notificationDropdown');
+                if (notifDropdown) {
+                    notifDropdown.addEventListener('click', function() {
+                        if (unreadCount > 0) {
+                            fetch('/Notification/MarkAsRead', { method: 'POST' }).then(() => {
+                                badge.style.display = "none";
+                                unreadCount = 0;
+                            });
+                        }
+                    });
+                }
             });
         </script>
     }
@@ -1683,5 +1709,6 @@
             }, 1000);
         }
     </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

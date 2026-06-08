@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using GoldBranchAI.Services;
 using System.Linq;
 
 namespace GoldBranchAI.Controllers
 {
+    [Authorize]
     public class ZenController : Controller
     {
         private readonly Data.AppDbContext _context;

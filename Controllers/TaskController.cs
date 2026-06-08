@@ -18,14 +18,18 @@ namespace GoldBranchAI.Controllers
         private readonly IHubContext<NotificationHub> _notificationHub;
         private readonly EmailService _emailService;
         private readonly BillingService _billing;
+        private readonly TelegramService _telegramService;
+        private readonly DiscordService _discordService;
 
-        public TaskController(AppDbContext context, IWebHostEnvironment webHostEnvironment, IHubContext<NotificationHub> notificationHub, EmailService emailService, BillingService billing)
+        public TaskController(AppDbContext context, IWebHostEnvironment webHostEnvironment, IHubContext<NotificationHub> notificationHub, EmailService emailService, BillingService billing, TelegramService telegramService, DiscordService discordService)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
             _notificationHub = notificationHub;
             _emailService = emailService;
             _billing = billing;
+            _telegramService = telegramService;
+            _discordService = discordService;
         }
 
         private AppUser? GetCurrentUser()
@@ -237,15 +241,17 @@ namespace GoldBranchAI.Controllers
             _context.Tasks.Add(task);
 
             // YENİ GÖREVİ DE LOGLARA DÜŞÜRELİM
+            var currentUser = GetCurrentUser();
             var assignedUser = _context.Users.Find(task.AppUserId);
-            if (assignedUser != null)
+            
+            if (assignedUser != null && currentUser != null)
             {
-                _context.SystemLogs.Add(new SystemLog { ActionType = "YENİ GÖREV", Message = $"Proje Şefi, {assignedUser.FullName} adlı kişiye '{task.Title}' görevini atadı." });
+                _context.SystemLogs.Add(new SystemLog { ActionType = "YENİ GÖREV", Message = $"{currentUser.FullName}, {assignedUser.FullName} adlı kişiye '{task.Title}' görevini atadı." });
                 
                 // SIGNALR BİLDİRİM MERKEZİ TETİKLEMESİ
                 var notif = new SystemNotification { 
                     AppUserId = assignedUser.Id, 
-                    Message = $"Sana yeni bir görev atandı: {task.Title}", 
+                    Message = $"🚨 Yeni bir görev atandı: {task.Title} ({currentUser.FullName})", 
                     Link = "/Task/Index" 
                 };
                 _context.SystemNotifications.Add(notif);
@@ -254,21 +260,43 @@ namespace GoldBranchAI.Controllers
                 await _notificationHub.Clients.User(assignedUser.Id.ToString())
                    .SendAsync("ReceiveNotification", notif.Message, notif.Link);
                    
-                // EMAIL GÖNDERİMİ
+                // 📧 PREMIUM EMAIL GÖNDERİMİ
+                string attachmentHtml = !string.IsNullOrEmpty(task.AttachedFilePath) 
+                    ? $"<p style='color: #d97706; font-weight: bold;'>📎 Ekli Dosya: <span style='color: #555;'>Mevcut (Sistemden indirilebilir)</span></p>" 
+                    : "";
+
                 string emailBody = $@"
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ffcc00; border-radius: 10px;'>
-                        <h2 style='color: #d97706; text-align: center;'>🚨 Yeni Bir Görev Atandı!</h2>
-                        <p style='color: #555; font-size: 16px;'>Merhaba <strong>{assignedUser.FullName}</strong>,</p>
-                        <p style='color: #555; font-size: 16px;'>Proje Şefi tarafından sana yeni bir görev tahsis edildi.</p>
-                        <br>
-                        <div style='background: #fdf6e3; padding: 15px; border-left: 4px solid #fbbf24;'>
-                            <h3 style='margin-top:0; color: #b45309;'>{task.Title}</h3>
-                            <p style='font-size: 14px; color: #333;'>Son Teslim Tarihi: <strong>{task.DueDate:dd MMM yyyy HH:mm}</strong></p>
+                    <div style='font-family: ""Inter"", sans-serif; max-width: 600px; margin: auto; padding: 30px; background: #0d1117; border: 1px solid #30363d; border-radius: 16px; color: #c9d1d9;'>
+                        <div style='text-align: center; margin-bottom: 20px;'>
+                            <h1 style='color: #fbbf24; margin-bottom: 5px;'>GoldBranch AI</h1>
+                            <p style='color: #8b949e; font-size: 14px;'>Profesyonel Görev Takip Sistemi</p>
                         </div>
-                        <br>
-                        <a href='http://localhost:5161/Task/Index' style='display:inline-block; padding: 10px 20px; background: #fbbf24; color: #000; text-decoration: none; font-weight: bold; border-radius: 5px;'>Sisteme Git ve Görevi İncele</a>
+                        <div style='background: rgba(251, 191, 36, 0.1); border-left: 4px solid #fbbf24; padding: 20px; border-radius: 8px;'>
+                            <h2 style='color: #fbbf24; margin-top: 0;'>🚨 Yeni Görev Atandı!</h2>
+                            <p style='font-size: 16px;'>Merhaba <strong>{assignedUser.FullName}</strong>,</p>
+                            <p><strong>{currentUser.FullName}</strong> sana yeni bir sorumluluk tahsis etti.</p>
+                            <hr style='border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;'>
+                            <h3 style='color: #fff;'>{task.Title}</h3>
+                            <p style='color: #8b949e;'>{task.Description}</p>
+                            <p style='font-size: 14px;'>📅 Son Teslim: <strong style='color: #ff7b72;'>{task.DueDate:dd MMM yyyy HH:mm}</strong></p>
+                            {attachmentHtml}
+                        </div>
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{Request.Scheme}://{Request.Host}/Task/Index' style='display:inline-block; padding: 14px 28px; background: #fbbf24; color: #000; text-decoration: none; font-weight: bold; border-radius: 50px; box-shadow: 0 4px 15px rgba(251,191,36,0.3);'>GÖREVİ İNCELE</a>
+                        </div>
+                        <p style='text-align: center; color: #484f58; font-size: 12px; margin-top: 30px;'>Bu e-posta GoldBranch AI otomatik bildirim sistemi tarafından gönderilmiştir.</p>
                     </div>";
-                _ = _emailService.SendEmailAsync(assignedUser.Email, $"Yeni Görev: {task.Title}", emailBody);
+
+                _ = _emailService.SendEmailAsync(assignedUser.Email, $"🚨 Yeni Görev: {task.Title}", emailBody);
+
+                // 🤖 TELEGRAM & DISCORD ENTEGRASYONU
+                string plainMsg = $"🚨 *YENİ GÖREV ATANDI*\n\n👤 **Atayan:** {currentUser.FullName}\n📋 **Görev:** {task.Title}\n⏰ **Tarih:** {task.DueDate:dd.MM.yyyy HH:mm}\n\nDetaylar için sisteme giriş yapın.";
+                
+                if (!string.IsNullOrEmpty(assignedUser.TelegramChatId))
+                    _ = _telegramService.SendMessageAsync(assignedUser.TelegramChatId, plainMsg);
+                
+                if (!string.IsNullOrEmpty(assignedUser.DiscordWebhookUrl))
+                    _ = _discordService.SendNotificationAsync(assignedUser.DiscordWebhookUrl, plainMsg, "Yeni Görev Ataması");
             }
             else
             {
@@ -686,6 +714,7 @@ namespace GoldBranchAI.Controllers
         public IActionResult ProjectReport()
         {
             var currentUser = GetCurrentUser();
+            if (currentUser == null) return RedirectToAction("Logout", "Auth");
             var billingState = _billing.GetUserState(currentUser.Id, currentUser.Email);
             
             // Feature Gate: Only Pro and Business

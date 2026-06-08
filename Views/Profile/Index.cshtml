@@ -13,7 +13,7 @@
     .profile-glass { background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(13, 17, 23, 0.8) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 24px; }
 </style>
 
-<div class="gb-page fade-in-up" style="max-width: 1200px; margin: 0 auto;">
+<div class="gb-page fade-in-up">
     
     <!-- HEADER CARD -->
     <div class="profile-glass p-4 mb-5 shadow-lg">
@@ -128,7 +128,29 @@
                             <div class="small fw-bold text-white">@badge.BadgeName</div>
                         </div>
                     }
-                } else {
+                }
+
+                @if(ViewBag.GithubProfile != null) {
+                    <div class="badge-item text-center p-2 rounded-3 mb-3 w-100" style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2);">
+                        <div class="small fw-bold text-info mb-2"><i class="fa-brands fa-github me-1"></i> GITHUB BAŞARILARI</div>
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <div class="h5 fw-bold text-white mb-0">@ViewBag.GithubProfile.public_repos</div>
+                                <div class="smallest text-muted">Repo</div>
+                            </div>
+                            <div>
+                                <div class="h5 fw-bold text-white mb-0">@ViewBag.GithubProfile.followers</div>
+                                <div class="smallest text-muted">Takipçi</div>
+                            </div>
+                            <div>
+                                <div class="h5 fw-bold text-white mb-0">@ViewBag.GithubProfile.public_gists</div>
+                                <div class="smallest text-muted">Gist</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (!(Model.UserBadges != null && Model.UserBadges.Any()) && ViewBag.GithubProfile == null) {
                     <p class="text-muted italic">Henüz kazanılmış rozet bulunmuyor.</p>
                 }
             </div>

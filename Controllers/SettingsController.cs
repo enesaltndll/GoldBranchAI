@@ -39,8 +39,8 @@ namespace GoldBranchAI.Controllers
             // Heatmap Data (Last 120 days)
             var startDate = DateTime.Today.AddDays(-119);
             var activityData = user.TodoTasks
-                .Where(t => t.IsCompleted && t.CompletedAt >= startDate)
-                .GroupBy(t => t.CompletedAt.Value.Date)
+                .Where(t => t.IsCompleted && t.CompletedAt.HasValue && t.CompletedAt.Value >= startDate)
+                .GroupBy(t => t.CompletedAt!.Value.Date)
                 .Select(g => new { Date = g.Key, Count = g.Count() })
                 .ToDictionary(k => k.Date, v => v.Count);
             
@@ -78,7 +78,7 @@ namespace GoldBranchAI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProfile(string fullName, string bio, string avatarUrl, string telegramChatId)
+        public async Task<IActionResult> UpdateProfile(string fullName, string bio, string avatarUrl, string telegramChatId, string discordWebhookUrl)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -99,10 +99,32 @@ namespace GoldBranchAI.Controllers
             user.Bio = bio;
             user.AvatarUrl = avatarUrl;
             user.TelegramChatId = telegramChatId;
+            user.DiscordWebhookUrl = discordWebhookUrl;
 
             await _context.SaveChangesAsync();
             TempData["Success"] = "Profiliniz başarıyla güncellendi.";
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TestDiscord()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            
+            if (user == null || string.IsNullOrEmpty(user.DiscordWebhookUrl))
+            {
+                return Json(new { success = false, message = "Discord Webhook URL bulunamadı!" });
+            }
+
+            var discordService = HttpContext.RequestServices.GetRequiredService<DiscordService>();
+            var result = await discordService.SendNotificationAsync(user.DiscordWebhookUrl, 
+                $"🚀 **GoldBranch AI Bağlantısı Başarılı!**\n\nMerhaba {user.FullName}, bu bir test bildirimidir. Artık tüm sistem uyarılarını bu Discord kanalı üzerinden alabilirsin.");
+
+            if (result)
+                return Json(new { success = true, message = "Discord test mesajı başarıyla gönderildi!" });
+            else
+                return Json(new { success = false, message = "Hata! Webhook URL geçersiz olabilir." });
         }
 
         [HttpPost]
@@ -122,9 +144,9 @@ namespace GoldBranchAI.Controllers
             var result = await telegramService.SendMessageAsync(user.TelegramChatId, message);
 
             if (result)
-                return Json(new { success = true, message = "Test mesajı başarıyla gönderildi!" });
+                return Json(new { success = true, message = "Test mesajı başarıyla gönderildi! Lütfen Telegram kutunuzu kontrol edin." });
             else
-                return Json(new { success = false, message = "Hata! Bot Token geçersiz olabilir veya botu henüz başlatmamış olabilirsiniz." });
+                return Json(new { success = false, message = "Bağlantı Kurulamadı! Lütfen @GoldBranchAIBot'u başlattığınızdan (START) ve ID'nizin doğru olduğundan emin olun. ID'nizi @userinfobot'tan öğrenebilirsiniz." });
         }
 
         [HttpPost]

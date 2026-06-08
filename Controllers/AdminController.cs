@@ -22,6 +22,11 @@ namespace GoldBranchAI.Controllers
         }
 
         private bool IsAdmin() => User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "Admin";
+        private bool CanManage()
+        {
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            return role == "Admin" || role == "Proje Sefi";
+        }
         private AppUser? GetAdminUser()
         {
             var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
@@ -30,7 +35,7 @@ namespace GoldBranchAI.Controllers
         
         public IActionResult Index()
         {
-            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+            if (!CanManage()) return RedirectToAction("Index", "Task");
             
             // 1. Basic Stats
             int userCount = _context.Users.Count();
@@ -115,7 +120,7 @@ namespace GoldBranchAI.Controllers
 
         public IActionResult WorkReports()
         {
-            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+            if (!CanManage()) return RedirectToAction("Index", "Task");
             var logs = _context.DailyTimeLogs.Include(l => l.AppUser).Where(l => l.LogDate >= DateTime.Today.AddDays(-7)).OrderByDescending(l => l.LogDate).ToList();
             return View(logs);
         }
@@ -123,7 +128,7 @@ namespace GoldBranchAI.Controllers
         [HttpGet]
         public IActionResult ExportWorkReportsCsv()
         {
-            if (!IsAdmin()) return Unauthorized();
+            if (!CanManage()) return Unauthorized();
             var adminUser = GetAdminUser();
             if (adminUser != null && !_billing.CanUseFeature(adminUser.Id, adminUser.Email, "excel_export"))
             {
@@ -158,7 +163,7 @@ namespace GoldBranchAI.Controllers
         // 1. Tükenmişlik (Burnout) Isı Haritası (ÇÖKME HATASI DÜZELTİLDİ)
         public IActionResult BurnoutMap()
         {
-            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+            if (!CanManage()) return RedirectToAction("Index", "Task");
             var adminUser = GetAdminUser();
             if (adminUser != null && !_billing.CanUseFeature(adminUser.Id, adminUser.Email, "burnout_map"))
             {
@@ -209,7 +214,7 @@ namespace GoldBranchAI.Controllers
 
         public IActionResult Leaderboard()
         {
-            if (!IsAdmin()) return RedirectToAction("Index", "Task");
+            if (!CanManage()) return RedirectToAction("Index", "Task");
 
             var topDevs = _context.Users
                 .Where(u => u.Role == "Gelistirici")
@@ -230,7 +235,7 @@ namespace GoldBranchAI.Controllers
         [HttpGet]
         public IActionResult ExportLeaderboardCsv()
         {
-            if (!IsAdmin()) return Unauthorized();
+            if (!CanManage()) return Unauthorized();
             var adminUser = GetAdminUser();
             if (adminUser != null && !_billing.CanUseFeature(adminUser.Id, adminUser.Email, "excel_export"))
             {
@@ -297,6 +302,24 @@ namespace GoldBranchAI.Controllers
                 try 
                 {
                     // 1. İlişkili verileri temizle (Foreign Key hatalarını önlemek için)
+                    var relatedNotifications = _context.SystemNotifications.Where(n => n.AppUserId == userId);
+                    _context.SystemNotifications.RemoveRange(relatedNotifications);
+
+                    var relatedBadges = _context.UserBadges.Where(b => b.AppUserId == userId);
+                    _context.UserBadges.RemoveRange(relatedBadges);
+
+                    var relatedFriendships = _context.Friendships.Where(f => f.UserId == userId || f.FriendId == userId);
+                    _context.Friendships.RemoveRange(relatedFriendships);
+
+                    var relatedGroupMembers = _context.ChatGroupMembers.Where(m => m.AppUserId == userId);
+                    _context.ChatGroupMembers.RemoveRange(relatedGroupMembers);
+
+                    var relatedFilterViews = _context.TaskFilterViews.Where(v => v.AppUserId == userId);
+                    _context.TaskFilterViews.RemoveRange(relatedFilterViews);
+
+                    var relatedComments = _context.TaskComments.Where(c => c.AppUserId == userId);
+                    _context.TaskComments.RemoveRange(relatedComments);
+
                     var relatedTasks = _context.Tasks.Where(t => t.AppUserId == userId);
                     _context.Tasks.RemoveRange(relatedTasks);
 

@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# GoldBranch AI - Sensitive Configuration & Local Data
+appsettings.Development.json
+App_Data/
+.cursor/

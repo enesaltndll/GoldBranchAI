@@ -1,11 +1,14 @@
 using GoldBranchAI.Data;
 using GoldBranchAI.Models;
 using GoldBranchAI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace GoldBranchAI.Controllers
 {
+    [Authorize]
     public class SeedController : Controller
     {
         private readonly AppDbContext _context;
@@ -20,6 +23,10 @@ namespace GoldBranchAI.Controllers
         [HttpGet]
         public async Task<IActionResult> ResetDatabase()
         {
+            // Sadece Admin kullanıcılar veritabanını sıfırlayabilir
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (role != "Admin") return Forbid();
+
             // 1. Clear related data to avoid FK conflicts
             var allUsers = await _context.Users.ToListAsync();
             var adminId = allUsers.FirstOrDefault(u => u.Email.ToLower() == "admin@test.com")?.Id;
