@@ -120,12 +120,13 @@ Sistemi değerlendirmek ve tüm modülleri test etmek için aşağıdaki varsay�
 
 ---
 
-## ❤️ Teşekkür ve Şükran
+## ❤️ Mezuniyet Raporu ve Teşekkür
 
-Bu projenin fikir aşamasından hayata geçirilmesine kadar olan 10 haftalık yoğun geliştirme sürecinde:
-* Bizlere vizyon katan, akademik bilgi ve tecrübeleriyle yolumuzu aydınlatan kıymetli hocamız **Öğr. Gör. Ekrem SAYDAM**'a,
-* Fikir alışverişleriyle, yapıcı eleştirileriyle ve motivasyonlarıyla sürece katkı sunan tüm değerli **öğrenci arkadaşlarımıza**,
+Sinop Üniversitesi Ayancık Meslek Yüksekokulu çatısı altında geçirdiğimiz ve iki yılı aşkın bir süre boyunca her gününe ayrı bir emek sığdırdığımız eğitim hayatımızın sonuna gelmiş bulunuyoruz. Mezuniyetimizin nişanesi olan bu projenin hayata geçirilmesinde ve iki yıllık bu güzel süreçte:
 
-Sonsuz teşekkür ve şükranlarımızı sunarız. 
+* Bizlere sadece teknik bilgi ve teoriyi değil; mesleki vizyonu, disiplini ve mühendislik ahlakını aşılayan, her tıkandığımızda tecrübesiyle yolumuzu aydınlatan saygıdeğer hocamız **Öğr. Gör. Ekrem SAYDAM**'a,
+* Sınıflarda omuz omuza verdiğimiz, birlikte sabahlayıp projeler ürettiğimiz, acı tatlı anıları paylaştığımız tüm değerli **öğrenci arkadaşlarımıza ve dönem dostlarımıza**,
 
-🚀 *Birlikte daha iyi sistemler tasarlamak ve geliştirmek dileğiyle!*
+Sonsuz teşekkür ve şükranlarımızı sunarız. Sinop Üniversitesinden mezun olurken, burada edindiğimiz dostlukları ve hocalarımızın paha biçilemez rehberliğini hayatımız boyunca gururla taşıyacağız.
+
+🎓 *Geleceğin teknolojilerini inşa edeceğimiz yeni yollarda, hepimizin başarılara imza atması ve yollarımızın tekrar kesişmesi dileğiyle!*
