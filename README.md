@@ -124,7 +124,7 @@ Sistemi değerlendirmek ve tüm modülleri test etmek için aşağıdaki varsay�
 
 Sinop Üniversitesi Ayancık Meslek Yüksekokulu çatısı altında geçirdiğimiz ve iki yılı aşkın bir süre boyunca her gününe ayrı bir emek sığdırdığımız eğitim hayatımızın sonuna gelmiş bulunuyoruz. Mezuniyetimizin nişanesi olan bu projenin hayata geçirilmesinde ve iki yıllık bu güzel süreçte:
 
-* Bizlere sadece teknik bilgi ve teoriyi değil; mesleki vizyonu, disiplini ve mühendislik ahlakını aşılayan, her tıkandığımızda tecrübesiyle yolumuzu aydınlatan saygıdeğer hocamız **Öğr. Gör. Ekrem SAYDAM**'a,
+* Başta bizlere sadece teknik bilgi ve teoriyi değil; mesleki vizyonu, disiplini ve mühendislik ahlakını aşılayan, her tıkandığımızda tecrübesiyle yolumuzu aydınlatan saygıdeğer hocamız **Öğr. Gör. Ekrem SAYDAM** olmak üzere, iki yıllık eğitim hayatımız boyunca üzerimizde büyük emeği olan tüm değerli **hocalarımıza**,
 * Sınıflarda omuz omuza verdiğimiz, birlikte sabahlayıp projeler ürettiğimiz, acı tatlı anıları paylaştığımız tüm değerli **öğrenci arkadaşlarımıza ve dönem dostlarımıza**,
 
 Sonsuz teşekkür ve şükranlarımızı sunarız. Sinop Üniversitesinden mezun olurken, burada edindiğimiz dostlukları ve hocalarımızın paha biçilemez rehberliğini hayatımız boyunca gururla taşıyacağız.
